@@ -35,5 +35,14 @@ public class UserController {
         return "redirect:/user/login-page";
     }
 
-
+    @PostMapping("/login")
+    public String signin(LoginRequestDto requestDto, HttpServletResponse res){
+        try {
+            userService.login(requestDto, res);
+        }catch (Exception e){
+            e.printStackTrace();
+            return "redirect:/user/login-page?error";
+        }
+        return "redirect:/";
+    }
 }
