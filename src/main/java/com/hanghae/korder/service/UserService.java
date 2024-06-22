@@ -2,6 +2,7 @@ package com.hanghae.korder.service;
 
 import com.hanghae.korder.dto.auth.LoginRequestDto;
 import com.hanghae.korder.dto.SignUpRequestDto;
+import com.hanghae.korder.dto.auth.LoginResponseDto;
 import com.hanghae.korder.entity.UserEntity;
 import com.hanghae.korder.jwt.JwtUtil;
 import com.hanghae.korder.repository.UserRepository;
@@ -24,42 +25,22 @@ public class UserService {
         this.jwtUtil = jwtUtil;
     }
 
-    // ADMIN_TOKEN
-//    private final String ADMIN_TOKEN = "AAABnvxRVklrnYxKZ0aHgTBcXukeZygoC";
-
     public void signup(SignUpRequestDto requestDto) {
-        String name = requestDto.getName();
-        System.out.println("name = " + name);
+        String email = requestDto.getEmail();
         String password = passwordEncoder.encode(requestDto.getPassword());
 
-        // 회원 중복 확인
-        Optional<UserEntity> checkUsername = userRepository.findByName(name);
-        if (checkUsername.isPresent()) {
-            throw new IllegalArgumentException("중복된 사용자가 존재합니다.");
-        }
-
         // email 중복확인
-        String email = requestDto.getEmail();
         Optional<UserEntity> checkEmail = userRepository.findByEmail(email);
         if (checkEmail.isPresent()) {
             throw new IllegalArgumentException("중복된 Email 입니다.");
         }
 
-        // 사용자 ROLE 확인
-//        UserRoleEnum role = UserRoleEnum.USER;
-//        if (requestDto.isAdmin()) {
-//            if (!ADMIN_TOKEN.equals(requestDto.getAdminToken())) {
-//                throw new IllegalArgumentException("관리자 암호가 틀려 등록이 불가능합니다.");
-//            }
-//            role = UserRoleEnum.ADMIN;
-//        }
-
         // 사용자 등록
-        int points = 0; // 사용자 포인트
-        UserEntity user = new UserEntity(name, password, email, points);
+        UserEntity user = new UserEntity(requestDto.getName(), password, email, 0);
         userRepository.save(user);
     }
-    public void login(LoginRequestDto requestDto, HttpServletResponse res) {
+
+    public LoginResponseDto login(LoginRequestDto requestDto, HttpServletResponse res) {
         String email = requestDto.getEmail();
         String password = requestDto.getPassword();
 
@@ -73,9 +54,15 @@ public class UserService {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
 
-        // JWT 생성 및 쿠키에 저장 후 Response 객체에 추가
-        String token = jwtUtil.createToken(user.getEmail());
-        jwtUtil.addJwtToCookie(token, res);
+        // JWT 생성
+        String accessToken = jwtUtil.createAccessToken(user.getEmail());
+        String refreshToken = jwtUtil.createRefreshToken();
+
+        // JWT를 쿠키에 추가
+        jwtUtil.addAccessTokenToCookie(accessToken, res);
+        jwtUtil.addRefreshTokenToCookie(refreshToken, res);
+
+        return new LoginResponseDto(accessToken, refreshToken);
 
     }
 }

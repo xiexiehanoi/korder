@@ -2,11 +2,14 @@ package com.hanghae.korder.controller;
 
 import com.hanghae.korder.dto.auth.LoginRequestDto;
 import com.hanghae.korder.dto.SignUpRequestDto;
+import com.hanghae.korder.dto.auth.LoginResponseDto;
 import com.hanghae.korder.service.UserService;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
@@ -15,7 +18,7 @@ public class UserController {
 
     private final UserService userService;
 
-    public UserController(UserService userService){
+    public UserController(UserService userService) {
         this.userService = userService;
     }
 
@@ -30,19 +33,19 @@ public class UserController {
     }
 
     @PostMapping("/signup")
-    public String signup(SignUpRequestDto requestDto){
+    public String signup(SignUpRequestDto requestDto) {
         userService.signup(requestDto);
         return "redirect:/user/login-page";
     }
 
     @PostMapping("/login")
-    public String signin(LoginRequestDto requestDto, HttpServletResponse res){
+    public ResponseEntity<?> signin(@RequestBody LoginRequestDto requestDto, HttpServletResponse res) {
         try {
-            userService.login(requestDto, res);
-        }catch (Exception e){
+            LoginResponseDto responseDto = userService.login(requestDto, res);
+            return ResponseEntity.ok(responseDto);
+        } catch (Exception e) {
             e.printStackTrace();
-            return "redirect:/user/login-page?error";
+            return ResponseEntity.badRequest().body("Login failed: " + e.getMessage());
         }
-        return "redirect:/";
     }
 }

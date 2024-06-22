@@ -18,19 +18,57 @@
     <button id="login-id-btn" onclick="location.href='/user/signup'">
         회원 가입하기
     </button>
-    <form action="/user/login" method="post">
+    <form id="login-form">
         <div class="login-id-label">이메일</div>
-        <input type="text" name="email" class="login-input-box">
+        <input type="text" id="email" name="email" class="login-input-box">
 
         <div class="login-id-label">비밀번호</div>
-        <input type="password" name="password" class="login-input-box">
+        <input type="password" id="password" name="password" class="login-input-box">
 
-        <button id="login-id-submit">로그인</button>
+        <button type="submit" id="login-id-submit">로그인</button>
     </form>
     <div id="login-failed" style="display: none" class="alert alert-danger" role="alert">로그인에 실패하였습니다.</div>
 </div>
 </body>
 <script>
+    document.getElementById('login-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+
+        const data = {
+            email: email,
+            password: password
+        };
+
+        fetch('http://localhost:8080/user/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Login failed');
+                }
+                const accessToken = response.headers.get('Authorization');
+                const refreshToken = response.headers.get('Refresh-Token');
+                console.log('Access Token:', accessToken);
+                console.log('Refresh Token:', refreshToken);
+                return response.json();
+            })
+            .then(data => {
+                console.log('Success:', data);
+                window.location.href = '/'; // 로그인 성공 후 리디렉션
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                document.getElementById('login-failed').style.display = 'block';
+            });
+    });
+
     const href = location.href;
     const queryString = href.substring(href.indexOf("?")+1)
     if (queryString === 'error') {
