@@ -1,7 +1,7 @@
 package com.hanghae.korder.config;
 
-import com.hanghae.korder.jwt.JwtTokenFilter;
-import com.hanghae.korder.jwt.JwtUtil;
+import com.hanghae.korder.auth.jwt.JwtTokenFilter;
+import com.hanghae.korder.auth.jwt.JwtUtil;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -38,6 +38,7 @@ public class WebSecurityConfig {
                                 .requestMatchers("/user/**").permitAll()
                                 .requestMatchers("/", "/css/**", "/js/**").permitAll() // 정적 리소스 허용
                                 .requestMatchers("/").permitAll() // 루트 경로 허용
+                                .requestMatchers("/user/mypage").authenticated()
                                 .anyRequest().authenticated())
                 .addFilterBefore(new JwtTokenFilter(jwtUtil, userDetailsService), UsernamePasswordAuthenticationFilter.class);
 

@@ -1,4 +1,4 @@
-package com.hanghae.korder.dto.auth;
+package com.hanghae.korder.auth.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

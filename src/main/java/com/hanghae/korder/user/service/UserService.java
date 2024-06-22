@@ -1,12 +1,16 @@
-package com.hanghae.korder.service;
+package com.hanghae.korder.user.service;
 
-import com.hanghae.korder.dto.auth.LoginRequestDto;
-import com.hanghae.korder.dto.SignUpRequestDto;
-import com.hanghae.korder.dto.auth.LoginResponseDto;
-import com.hanghae.korder.entity.UserEntity;
-import com.hanghae.korder.jwt.JwtUtil;
-import com.hanghae.korder.repository.UserRepository;
+import com.hanghae.korder.user.dto.MyPageDto;
+import com.hanghae.korder.auth.dto.LoginRequestDto;
+import com.hanghae.korder.user.dto.SignUpRequestDto;
+import com.hanghae.korder.auth.dto.LoginResponseDto;
+import com.hanghae.korder.user.entity.UserEntity;
+import com.hanghae.korder.auth.jwt.JwtUtil;
+import com.hanghae.korder.user.repository.UserRepository;
+import com.hanghae.korder.user.security.UserDetailsImpl;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -64,5 +68,18 @@ public class UserService {
 
         return new LoginResponseDto(accessToken, refreshToken);
 
+    }
+
+    public MyPageDto getUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !(authentication.getPrincipal() instanceof UserDetailsImpl)) {
+            throw new IllegalArgumentException("사용자를 찾을 수 없습니다.");
+        }
+
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        UserEntity user = userRepository.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+        return new MyPageDto(user.getName(), user.getEmail(), user.getPoints());
     }
 }

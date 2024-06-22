@@ -1,6 +1,6 @@
-package com.hanghae.korder.security;
+package com.hanghae.korder.user.security;
 
-import com.hanghae.korder.entity.UserEntity;
+import com.hanghae.korder.user.entity.UserEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 

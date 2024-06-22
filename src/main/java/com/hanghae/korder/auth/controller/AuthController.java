@@ -1,13 +1,9 @@
-package com.hanghae.korder.controller.auth;
+package com.hanghae.korder.auth.controller;
 
-import com.hanghae.korder.dto.auth.LoginRequestDto;
-import com.hanghae.korder.service.UserService;
-import jakarta.servlet.http.Cookie;
+import com.hanghae.korder.auth.dto.LoginRequestDto;
+import com.hanghae.korder.user.service.UserService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.bind.annotation.*;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 
 @RestController
 @RequestMapping("/api")

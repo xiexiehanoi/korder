@@ -1,4 +1,4 @@
-package com.hanghae.korder.entity;
+package com.hanghae.korder.user.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;

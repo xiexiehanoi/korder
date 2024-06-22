@@ -1,4 +1,4 @@
-package com.hanghae.korder.dto;
+package com.hanghae.korder.user.dto;
 
 import jakarta.validation.constraints.*;
 import lombok.Getter;

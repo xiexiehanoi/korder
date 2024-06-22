@@ -1,7 +1,7 @@
-package com.hanghae.korder.security;
+package com.hanghae.korder.user.security;
 
-import com.hanghae.korder.entity.UserEntity;
-import com.hanghae.korder.repository.UserRepository;
+import com.hanghae.korder.user.entity.UserEntity;
+import com.hanghae.korder.user.repository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
