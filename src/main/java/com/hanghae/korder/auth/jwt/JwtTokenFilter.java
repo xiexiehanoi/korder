@@ -36,6 +36,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             token = header.substring(7);
             try {
                 email = jwtUtil.getEmailFromToken(token);
+                System.out.println("email = " + email);
             } catch (Exception e) {
                 // 예외 처리 (로깅 등)
                 logger.error("JWT 토큰 처리 중 오류 발생: ", e);
@@ -44,6 +45,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
         if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetailsImpl userDetails = (UserDetailsImpl) userDetailsService.loadUserByUsername(email);
+            System.out.println("userDetails = " + userDetails);
             if (jwtUtil.validateToken(token)) {
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());

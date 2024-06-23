@@ -69,6 +69,7 @@ public class JwtUtil {
             Cookie cookie = new Cookie(cookieName, encodedToken);
             cookie.setPath("/");
             cookie.setMaxAge((int) maxAgeInMillis / 1000);
+//            cookie.setHttpOnly(true);
             res.addCookie(cookie);
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e.getMessage());

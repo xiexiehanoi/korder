@@ -1,5 +1,6 @@
 package com.hanghae.korder.user.controller;
 
+import com.hanghae.korder.auth.jwt.JwtUtil;
 import com.hanghae.korder.user.dto.MyPageDto;
 import com.hanghae.korder.auth.dto.LoginRequestDto;
 import com.hanghae.korder.user.dto.SignUpRequestDto;
@@ -16,9 +17,11 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final UserService userService;
+    private final JwtUtil jwtUtil;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, JwtUtil jwtUtil) {
         this.userService = userService;
+        this.jwtUtil = jwtUtil;
     }
 
     @GetMapping("/login-page")
@@ -41,6 +44,8 @@ public class UserController {
     public ResponseEntity<?> signin(@RequestBody LoginRequestDto requestDto, HttpServletResponse res) {
         try {
             LoginResponseDto responseDto = userService.login(requestDto, res);
+            jwtUtil.addAccessTokenToCookie(responseDto.getAccessToken(), res);
+            jwtUtil.addRefreshTokenToCookie(responseDto.getRefreshToken(), res);
             return ResponseEntity.ok(responseDto);
         } catch (Exception e) {
             e.printStackTrace();

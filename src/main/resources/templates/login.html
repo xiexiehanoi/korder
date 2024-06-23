@@ -53,10 +53,6 @@
                 if (!response.ok) {
                     throw new Error('Login failed');
                 }
-                const accessToken = response.headers.get('Authorization');
-                const refreshToken = response.headers.get('Refresh-Token');
-                console.log('Access Token:', accessToken);
-                console.log('Refresh Token:', refreshToken);
                 return response.json();
             })
             .then(data => {
