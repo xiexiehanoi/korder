@@ -1,16 +1,19 @@
 package com.hanghae.korder.event.entity;
 
 import jakarta.persistence.*;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @Entity
 @Table(name = "event_dates")
@@ -19,27 +22,23 @@ public class EventDateEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "event_id", nullable = false)
-    private EventEntity event;
-
-    @Column(nullable = false)
+    @Column(name = "date")
     private LocalDate date;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
 
-    @Column(name = "updated_at", nullable = false)
-    private LocalDateTime updatedAt = LocalDateTime.now();
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
-    @OneToMany(mappedBy = "eventDate", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<EventSeatEntity> seats;
+    @ManyToOne
+    @JoinColumn(name = "event_id")
+    private EventEntity event;
 
-    public EventDateEntity(EventEntity event, LocalDate date) {
-        this.event = event;
-        this.date = date;
-    }
+    @OneToMany(mappedBy = "eventDate", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<EventSeatEntity> seats = new ArrayList<>();
+
 }
