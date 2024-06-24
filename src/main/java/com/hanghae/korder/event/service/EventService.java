@@ -1,7 +1,10 @@
 package com.hanghae.korder.event.service;
 
+import com.hanghae.korder.auth.jwt.JwtUtil;
+import com.hanghae.korder.event.dto.EventDetailDto;
 import com.hanghae.korder.event.dto.EventDto;
-import com.hanghae.korder.event.dto.EventRequestDTO;
+import com.hanghae.korder.event.dto.EventRequestDto;
+import com.hanghae.korder.event.dto.EventResponseDto;
 import com.hanghae.korder.event.entity.EventDateEntity;
 import com.hanghae.korder.event.entity.EventEntity;
 import com.hanghae.korder.event.entity.EventSeatEntity;
@@ -9,100 +12,148 @@ import com.hanghae.korder.event.repository.EventDateRepository;
 import com.hanghae.korder.event.repository.EventRepository;
 import com.hanghae.korder.event.repository.EventSeatRepository;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class EventService {
-
     private final EventRepository eventRepository;
     private final EventDateRepository eventDateRepository;
-    private final EventSeatRepository seatRepository;
+    private final EventSeatRepository eventSeatRepository;
 
-    public EventService(EventRepository eventRepository, EventDateRepository eventDateRepository, EventSeatRepository seatRepository) {
-        this.eventRepository = eventRepository;
-        this.eventDateRepository = eventDateRepository;
-        this.seatRepository = seatRepository;
+    @Transactional
+    public EventResponseDto addEvent(EventRequestDto request, String createdBy) {
+        EventEntity event = new EventEntity();
+        event.setName(request.getName());
+        event.setDescription(request.getDescription());
+        event.setPlace(request.getPlace());
+        event.setCreatedBy(createdBy);
+        event.setCreatedAt(LocalDateTime.now());
+        event.setUpdatedAt(LocalDateTime.now());
+
+        List<EventDateEntity> eventDates = request.getEventDates().stream().map(eventDateDTO -> {
+            EventDateEntity eventDate = new EventDateEntity();
+            eventDate.setDate(LocalDate.parse(eventDateDTO.getDate()));
+            eventDate.setCreatedAt(LocalDateTime.now());
+            eventDate.setUpdatedAt(LocalDateTime.now());
+            eventDate.setEvent(event);
+
+            List<EventSeatEntity> seats = eventDateDTO.getSeats().stream().map(seatDTO -> {
+                EventSeatEntity seat = new EventSeatEntity();
+                seat.setSeatNumber(seatDTO.getSeatNumber());
+                seat.setPrice(BigDecimal.valueOf(seatDTO.getPrice())); // Double을 BigDecimal로 변환
+                seat.setStatus("available");
+                seat.setCreatedAt(LocalDateTime.now());
+                seat.setUpdatedAt(LocalDateTime.now());
+                seat.setEventDate(eventDate);
+                return seat;
+            }).collect(Collectors.toList());
+            eventDate.setSeats(seats);
+
+            return eventDate;
+        }).collect(Collectors.toList());
+
+        event.setEventDates(eventDates);
+
+        EventEntity savedEvent = eventRepository.save(event);
+        return convertToResponse(savedEvent);
     }
 
     @Transactional
-    public EventDto createEventWithDatesAndSeats(EventRequestDTO eventRequestDTO, String email) {
-        EventEntity eventEntity = new EventEntity(eventRequestDTO.getName(),
-                eventRequestDTO.getDescription(),
-                eventRequestDTO.getPlace());
-        EventEntity savedEventEntity = eventRepository.save(eventEntity);
-
-        eventRequestDTO.getEventDates().forEach(eventDateDTO -> {
-            EventDateEntity eventDateEntity = new EventDateEntity(savedEventEntity,
-                    eventDateDTO.getDate());
-            EventDateEntity savedEventDateEntity = eventDateRepository.save(eventDateEntity);
-
-            List<EventSeatEntity> seatEntities = eventDateDTO.getSeats().stream()
-                    .map(seatDTO -> new EventSeatEntity(savedEventDateEntity,
-                            seatDTO.getSeatNumber(),
-                            seatDTO.getPrice(),
-                            "available"))
-                    .collect(Collectors.toList());
-            seatRepository.saveAll(seatEntities);
-        });
-
-        return new EventDto(savedEventEntity.getId(),
-                savedEventEntity.getName(),
-                savedEventEntity.getDescription(),
-                savedEventEntity.getPlace());
+    public void deleteEvent(Long eventId, String createdBy) {
+        EventEntity event = eventRepository.findByIdAndCreatedBy(eventId, createdBy)
+                .orElseThrow(() -> new RuntimeException("Event not found or user not authorized"));
+        eventRepository.delete(event);
     }
 
     @Transactional
-    public void deleteEvent(Long id, String email) {
-        eventRepository.deleteById(id);
+    public EventResponseDto updateEvent(Long eventId, EventRequestDto request, String createdBy) {
+        EventEntity event = eventRepository.findByIdAndCreatedBy(eventId, createdBy)
+                .orElseThrow(() -> new RuntimeException("Event not found or user not authorized"));
+        event.setName(request.getName());
+        event.setDescription(request.getDescription());
+        event.setPlace(request.getPlace());
+        event.setUpdatedAt(LocalDateTime.now());
+
+        List<EventDateEntity> eventDates = request.getEventDates().stream().map(eventDateDTO -> {
+            EventDateEntity eventDate = new EventDateEntity();
+            eventDate.setDate(LocalDate.parse(eventDateDTO.getDate()));
+            eventDate.setCreatedAt(LocalDateTime.now());
+            eventDate.setUpdatedAt(LocalDateTime.now());
+            eventDate.setEvent(event);
+
+            List<EventSeatEntity> seats = eventDateDTO.getSeats().stream().map(seatDTO -> {
+                EventSeatEntity seat = new EventSeatEntity();
+                seat.setSeatNumber(seatDTO.getSeatNumber());
+                seat.setPrice(BigDecimal.valueOf(seatDTO.getPrice())); // Double을 BigDecimal로 변환
+                seat.setStatus("available");
+                seat.setCreatedAt(LocalDateTime.now());
+                seat.setUpdatedAt(LocalDateTime.now());
+                seat.setEventDate(eventDate);
+                return seat;
+            }).collect(Collectors.toList());
+            eventDate.setSeats(seats);
+
+            return eventDate;
+        }).collect(Collectors.toList());
+
+        event.setEventDates(eventDates);
+
+        EventEntity savedEvent = eventRepository.save(event);
+        return convertToResponse(savedEvent);
     }
 
-    @Transactional
-    public EventDto updateEvent(EventRequestDTO eventRequestDTO, String email) {
-        Optional<EventEntity> optionalEvent = eventRepository.findById(eventRequestDTO.getId());
-        if (optionalEvent.isPresent()) {
-            EventEntity eventEntity = optionalEvent.get();
-            eventEntity.setName(eventRequestDTO.getName());
-            eventEntity.setDescription(eventRequestDTO.getDescription());
-            eventEntity.setPlace(eventRequestDTO.getPlace());
-            EventEntity updatedEventEntity = eventRepository.save(eventEntity);
-
-            eventDateRepository.deleteByEventId(updatedEventEntity.getId());
-            seatRepository.deleteByEventDateEventId(updatedEventEntity.getId());
-
-            eventRequestDTO.getEventDates().forEach(eventDateDTO -> {
-                EventDateEntity eventDateEntity = new EventDateEntity(updatedEventEntity,
-                        eventDateDTO.getDate());
-                EventDateEntity savedEventDateEntity = eventDateRepository.save(eventDateEntity);
-
-                List<EventSeatEntity> seatEntities = eventDateDTO.getSeats().stream()
-                        .map(seatDTO -> new EventSeatEntity(savedEventDateEntity,
-                                seatDTO.getSeatNumber(),
-                                seatDTO.getPrice(),
-                                "available"))
-                        .collect(Collectors.toList());
-                seatRepository.saveAll(seatEntities);
-            });
-
-            return new EventDto(updatedEventEntity.getId(),
-                    updatedEventEntity.getName(),
-                    updatedEventEntity.getDescription(),
-                    updatedEventEntity.getPlace());
-        }
-        return null;
-    }
-
-    @Transactional
-    public List<EventDto> getAllEvents() {
-        List<EventEntity> events = eventRepository.findAll();
-        return events.stream()
-                .map(event -> new EventDto(event.getId(),
-                        event.getName(),
-                        event.getDescription(),
-                        event.getPlace()))
+    public List<EventResponseDto> getAllListEvent() {
+        return eventRepository.findAll().stream()
+                .map(this::convertToResponse)
                 .collect(Collectors.toList());
+    }
+
+    public List<EventDetailDto> getDetailEvent(Long eventId) {
+        return eventRepository.findEventDetailsByEventId(eventId);
+    }
+
+    private EventResponseDto convertToSimpleResponse(EventEntity event) {
+        EventResponseDto response = new EventResponseDto();
+        response.setId(event.getId());
+        response.setName(event.getName());
+        response.setDescription(event.getDescription());
+        response.setPlace(event.getPlace());
+        response.setCreatedAt(event.getCreatedAt());
+        response.setUpdatedAt(event.getUpdatedAt());
+        response.setDeletedAt(event.getDeletedAt());
+        return response;
+    }
+
+    private EventResponseDto convertToResponse(EventEntity event) {
+        EventResponseDto response = convertToSimpleResponse(event);
+        response.setEventDates(event.getEventDates().stream()
+                .map(eventDate -> {
+                    EventResponseDto.EventDateResponseDTO eventDateResponse = new EventResponseDto.EventDateResponseDTO();
+                    eventDateResponse.setId(eventDate.getId());
+                    eventDateResponse.setDate(eventDate.getDate().toString());
+                    eventDateResponse.setSeats(eventDate.getSeats().stream()
+                            .map(seat -> {
+                                EventResponseDto.EventDateResponseDTO.SeatResponseDTO seatResponse = new EventResponseDto.EventDateResponseDTO.SeatResponseDTO();
+                                seatResponse.setId(seat.getId());
+                                seatResponse.setSeatNumber(seat.getSeatNumber());
+                                seatResponse.setPrice(seat.getPrice().doubleValue()); // BigDecimal을 Double로 변환
+                                seatResponse.setStatus(seat.getStatus());
+                                return seatResponse;
+                            })
+                            .collect(Collectors.toList()));
+                    return eventDateResponse;
+                })
+                .collect(Collectors.toList()));
+        return response;
     }
 }

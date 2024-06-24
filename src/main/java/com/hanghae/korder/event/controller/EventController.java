@@ -1,48 +1,58 @@
 package com.hanghae.korder.event.controller;
 
+import com.hanghae.korder.event.dto.EventDetailDto;
 import com.hanghae.korder.event.dto.EventDto;
-import com.hanghae.korder.event.dto.EventRequestDTO;
+import com.hanghae.korder.event.dto.EventRequestDto;
+import com.hanghae.korder.event.dto.EventResponseDto;
+import com.hanghae.korder.event.entity.EventEntity;
 import com.hanghae.korder.event.service.EventService;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @Controller
+@RequiredArgsConstructor
 @RequestMapping("/event")
 public class EventController {
+    private final EventService eventService;
 
-    @Autowired
-    private EventService eventService;
-
-    @PostMapping("/add")
-    public ResponseEntity<EventDto> addEvent(@RequestBody EventRequestDTO eventRequestDTO,
-                                             @AuthenticationPrincipal String email) {
-        // 현재 인증된 사용자의 이메일을 사용할 수 있습니다.
-        EventDto createdEvent = eventService.createEventWithDatesAndSeats(eventRequestDTO, email);
-        return ResponseEntity.ok(createdEvent);
+    @PostMapping("")
+    public ResponseEntity<EventResponseDto> addEvent(@RequestBody EventRequestDto request, @AuthenticationPrincipal UserDetails userDetails) {
+        String createdBy = userDetails.getUsername();
+        EventResponseDto response = eventService.addEvent(request, createdBy);
+        return ResponseEntity.ok(response);
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Void> deleteEvent(@PathVariable Long id, @AuthenticationPrincipal String email) {
-        eventService.deleteEvent(id, email);
-        return ResponseEntity.ok().build();
+    @DeleteMapping("/{eventId}")
+    public ResponseEntity<Void> deleteEvent(@PathVariable Long eventId, @AuthenticationPrincipal UserDetails userDetails) {
+        String createdBy = userDetails.getUsername();
+        eventService.deleteEvent(eventId, createdBy);
+        return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/update")
-    public ResponseEntity<EventDto> updateEvent(@RequestBody EventRequestDTO eventRequestDTO,
-                                                @AuthenticationPrincipal String email) {
-        EventDto updatedEvent = eventService.updateEvent(eventRequestDTO, email);
-        return ResponseEntity.ok(updatedEvent);
+    @PutMapping("/{eventId}")
+    public ResponseEntity<EventResponseDto> updateEvent(@PathVariable Long eventId, @RequestBody EventRequestDto request, @AuthenticationPrincipal UserDetails userDetails) {
+        String createdBy = userDetails.getUsername();
+        EventResponseDto response = eventService.updateEvent(eventId, request, createdBy);
+        return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/list")
-    public ResponseEntity<List<EventDto>> getListEvent() {
-        List<EventDto> eventList = eventService.getAllEvents();
-        return ResponseEntity.ok(eventList);
+    @GetMapping("")
+    public ResponseEntity<List<EventResponseDto>> getAllListEvent() {
+        List<EventResponseDto> response = eventService.getAllListEvent();
+        return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/{eventId}")
+    public ResponseEntity<List<EventDetailDto>> getDetailEvent(@PathVariable Long eventId) {
+        List<EventDetailDto> response = eventService.getDetailEvent(eventId);
+        return ResponseEntity.ok(response);
+    }
 }
