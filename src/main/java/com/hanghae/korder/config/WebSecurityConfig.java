@@ -38,7 +38,7 @@ public class WebSecurityConfig {
                                 .requestMatchers("/user/**").permitAll()
                                 .requestMatchers("/", "/css/**", "/js/**").permitAll() // 정적 리소스 허용
                                 .requestMatchers("/").permitAll() // 루트 경로 허용
-                                .requestMatchers("/user/mypage").authenticated()
+                                .requestMatchers("/event/**").authenticated()
                                 .anyRequest().authenticated())
                 .addFilterBefore(new JwtTokenFilter(jwtUtil, userDetailsService), UsernamePasswordAuthenticationFilter.class);
 

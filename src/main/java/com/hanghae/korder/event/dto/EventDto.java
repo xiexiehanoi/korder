@@ -7,6 +7,15 @@ import lombok.Setter;
 @Setter
 public class EventDto {
 
+    private Long id;
+    private String name;
+    private String description;
+    private String place;
 
-
+    public EventDto(Long id, String name, String description, String place) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.place = place;
+    }
 }
