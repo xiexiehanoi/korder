@@ -7,27 +7,28 @@ import com.hanghae.korder.auth.dto.LoginResponseDto;
 import com.hanghae.korder.user.entity.UserEntity;
 import com.hanghae.korder.auth.jwt.JwtUtil;
 import com.hanghae.korder.user.repository.UserRepository;
+
 import com.hanghae.korder.user.security.UserDetailsImpl;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
+
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
-
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtUtil jwtUtil) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.jwtUtil = jwtUtil;
-    }
 
     public void signup(SignUpRequestDto requestDto) {
         String email = requestDto.getEmail();
@@ -36,7 +37,7 @@ public class UserService {
         // email 중복확인
         Optional<UserEntity> checkEmail = userRepository.findByEmail(email);
         if (checkEmail.isPresent()) {
-            throw new IllegalArgumentException("중복된 Email 입니다.");
+            throw new DataIntegrityViolationException("중복된 Email 입니다.");
         }
 
         // 사용자 등록
@@ -50,12 +51,12 @@ public class UserService {
 
         // 사용자 확인
         UserEntity user = userRepository.findByEmail(email).orElseThrow(
-                () -> new IllegalArgumentException("등록된 사용자가 없습니다.")
+                () -> new UsernameNotFoundException("등록된 사용자가 없습니다.")
         );
 
         // 비밀번호 확인
         if (!passwordEncoder.matches(password, user.getPassword())) {
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+            throw new BadCredentialsException("비밀번호가 일치하지 않습니다.");
         }
 
         // JWT 생성
@@ -67,18 +68,17 @@ public class UserService {
         jwtUtil.addRefreshTokenToCookie(refreshToken, res);
 
         return new LoginResponseDto(accessToken, refreshToken);
-
     }
 
     public MyPageDto getUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !(authentication.getPrincipal() instanceof UserDetailsImpl)) {
-            throw new IllegalArgumentException("사용자를 찾을 수 없습니다.");
+            throw new UsernameNotFoundException("사용자를 찾을 수 없습니다.");
         }
 
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         UserEntity user = userRepository.findByEmail(userDetails.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
 
         return new MyPageDto(user.getName(), user.getEmail(), user.getPoints());
     }

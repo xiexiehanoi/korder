@@ -7,22 +7,18 @@ import com.hanghae.korder.user.dto.SignUpRequestDto;
 import com.hanghae.korder.auth.dto.LoginResponseDto;
 import com.hanghae.korder.user.service.UserService;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
+@RequiredArgsConstructor
 @RequestMapping("/user")
 public class UserController {
 
     private final UserService userService;
-    private final JwtUtil jwtUtil;
-
-    public UserController(UserService userService, JwtUtil jwtUtil) {
-        this.userService = userService;
-        this.jwtUtil = jwtUtil;
-    }
 
     @GetMapping("/login-page")
     public String loginPage() {
@@ -44,8 +40,6 @@ public class UserController {
     public ResponseEntity<?> signin(@RequestBody LoginRequestDto requestDto, HttpServletResponse res) {
         try {
             LoginResponseDto responseDto = userService.login(requestDto, res);
-            jwtUtil.addAccessTokenToCookie(responseDto.getAccessToken(), res);
-            jwtUtil.addRefreshTokenToCookie(responseDto.getRefreshToken(), res);
             return ResponseEntity.ok(responseDto);
         } catch (Exception e) {
             e.printStackTrace();
