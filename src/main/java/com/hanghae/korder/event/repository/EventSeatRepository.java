@@ -5,6 +5,4 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface EventSeatRepository extends JpaRepository<EventSeatEntity, Long> {
 
-    void deleteByEventDateEventId(Long eventId);
-
 }
