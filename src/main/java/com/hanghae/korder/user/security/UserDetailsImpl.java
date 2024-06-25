@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class UserDetailsImpl implements UserDetails {
-
     private final UserEntity user;
 
     public UserDetailsImpl(UserEntity user) {
@@ -17,6 +16,10 @@ public class UserDetailsImpl implements UserDetails {
 
     public UserEntity getUser() {
         return user;
+    }
+
+    public Long getUserId() {
+        return user.getId();
     }
 
     @Override
