@@ -9,6 +9,7 @@ import com.hanghae.korder.event.service.EventService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -27,7 +28,7 @@ public class EventController {
     public ResponseEntity<EventResponseDto> addEvent(@RequestBody EventRequestDto request, @AuthenticationPrincipal UserDetails userDetails) {
         String createdBy = userDetails.getUsername();
         EventResponseDto response = eventService.addEvent(request, createdBy);
-        return ResponseEntity.ok(response);
+        return  ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @DeleteMapping("/{eventId}")
