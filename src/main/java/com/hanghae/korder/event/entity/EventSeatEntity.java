@@ -27,6 +27,9 @@ public class EventSeatEntity {
     private BigDecimal price;
 
     @Column(nullable = false)
+    private int quantity; // 추가된 필드
+
+    @Column(nullable = false)
     private String status;
 
     @Column(nullable = false)

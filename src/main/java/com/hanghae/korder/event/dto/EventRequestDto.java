@@ -25,6 +25,7 @@ public class EventRequestDto {
         public static class SeatDTO {
             private String seatNumber;
             private BigDecimal price;
+            private int quantity;
         }
     }
 }
