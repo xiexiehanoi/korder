@@ -14,7 +14,9 @@ import com.hanghae.korder.event.repository.EventSeatRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -27,8 +29,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class EventService {
     private final EventRepository eventRepository;
-    private final EventDateRepository eventDateRepository;
-    private final EventSeatRepository eventSeatRepository;
 
     @Transactional
     public EventResponseDto addEvent(EventRequestDto request, String createdBy) {
@@ -50,7 +50,7 @@ public class EventService {
             List<EventSeatEntity> seats = eventDateDTO.getSeats().stream().map(seatDTO -> {
                 EventSeatEntity seat = new EventSeatEntity();
                 seat.setSeatNumber(seatDTO.getSeatNumber());
-                seat.setPrice(BigDecimal.valueOf(seatDTO.getPrice())); // Double을 BigDecimal로 변환
+                seat.setPrice(seatDTO.getPrice());
                 seat.setStatus("available");
                 seat.setCreatedAt(LocalDateTime.now());
                 seat.setUpdatedAt(LocalDateTime.now());
@@ -71,7 +71,7 @@ public class EventService {
     @Transactional
     public void deleteEvent(Long eventId, String createdBy) {
         EventEntity event = eventRepository.findByIdAndCreatedBy(eventId, createdBy)
-                .orElseThrow(() -> new RuntimeException("Event not found or user not authorized"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Event not found or user not authorized"));
         eventRepository.delete(event);
     }
 
@@ -94,7 +94,7 @@ public class EventService {
             List<EventSeatEntity> seats = eventDateDTO.getSeats().stream().map(seatDTO -> {
                 EventSeatEntity seat = new EventSeatEntity();
                 seat.setSeatNumber(seatDTO.getSeatNumber());
-                seat.setPrice(BigDecimal.valueOf(seatDTO.getPrice())); // Double을 BigDecimal로 변환
+                seat.setPrice(seatDTO.getPrice());
                 seat.setStatus("available");
                 seat.setCreatedAt(LocalDateTime.now());
                 seat.setUpdatedAt(LocalDateTime.now());
@@ -146,7 +146,7 @@ public class EventService {
                                 EventResponseDto.EventDateResponseDTO.SeatResponseDTO seatResponse = new EventResponseDto.EventDateResponseDTO.SeatResponseDTO();
                                 seatResponse.setId(seat.getId());
                                 seatResponse.setSeatNumber(seat.getSeatNumber());
-                                seatResponse.setPrice(seat.getPrice().doubleValue()); // BigDecimal을 Double로 변환
+                                seatResponse.setPrice(seat.getPrice());
                                 seatResponse.setStatus(seat.getStatus());
                                 return seatResponse;
                             })

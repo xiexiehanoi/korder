@@ -16,7 +16,7 @@ public class EventDetailDto {
     private LocalDate eventDate;
     private Long seatId;
     private String seatNumber;
-    private BigDecimal seatPrice;  // BigDecimal로 유지
+    private BigDecimal seatPrice;
     private String seatStatus;
 
     public EventDetailDto(Long eventId, String eventName, String eventDescription, String eventPlace, LocalDate eventDate, Long seatId, String seatNumber, BigDecimal seatPrice, String seatStatus) {

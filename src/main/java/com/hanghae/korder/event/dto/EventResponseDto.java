@@ -2,6 +2,7 @@ package com.hanghae.korder.event.dto;
 
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -26,7 +27,7 @@ public class EventResponseDto {
         public static class SeatResponseDTO {
             private Long id;
             private String seatNumber;
-            private Double price;
+            private BigDecimal price;
             private String status;
         }
     }

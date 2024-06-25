@@ -24,7 +24,7 @@ public class EventRequestDto {
         @Data
         public static class SeatDTO {
             private String seatNumber;
-            private Double price;
+            private BigDecimal price;
         }
     }
 }
