@@ -1,5 +1,6 @@
 package com.hanghae.korder.event.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -12,8 +13,11 @@ public class EventResponseDto {
     private String name;
     private String description;
     private String place;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime createdAt;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime updatedAt;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime deletedAt;
     private List<EventDateResponseDTO> eventDates;
 
@@ -28,6 +32,7 @@ public class EventResponseDto {
             private Long id;
             private String seatNumber;
             private BigDecimal price;
+            private int quantity;
             private String status;
         }
     }

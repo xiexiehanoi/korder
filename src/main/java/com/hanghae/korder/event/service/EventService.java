@@ -51,6 +51,7 @@ public class EventService {
                 EventSeatEntity seat = new EventSeatEntity();
                 seat.setSeatNumber(seatDTO.getSeatNumber());
                 seat.setPrice(seatDTO.getPrice());
+                seat.setQuantity(seatDTO.getQuantity());
                 seat.setStatus("available");
                 seat.setCreatedAt(LocalDateTime.now());
                 seat.setUpdatedAt(LocalDateTime.now());
@@ -78,7 +79,7 @@ public class EventService {
     @Transactional
     public EventResponseDto updateEvent(Long eventId, EventRequestDto request, String createdBy) {
         EventEntity event = eventRepository.findByIdAndCreatedBy(eventId, createdBy)
-                .orElseThrow(() -> new RuntimeException("Event not found or user not authorized"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Event not found or user not authorized"));
         event.setName(request.getName());
         event.setDescription(request.getDescription());
         event.setPlace(request.getPlace());
@@ -95,6 +96,7 @@ public class EventService {
                 EventSeatEntity seat = new EventSeatEntity();
                 seat.setSeatNumber(seatDTO.getSeatNumber());
                 seat.setPrice(seatDTO.getPrice());
+                seat.setQuantity(seatDTO.getQuantity());
                 seat.setStatus("available");
                 seat.setCreatedAt(LocalDateTime.now());
                 seat.setUpdatedAt(LocalDateTime.now());
@@ -122,6 +124,7 @@ public class EventService {
         return eventRepository.findEventDetailsByEventId(eventId);
     }
 
+    //콘서트 기본 내용
     private EventResponseDto convertToSimpleResponse(EventEntity event) {
         EventResponseDto response = new EventResponseDto();
         response.setId(event.getId());
@@ -134,6 +137,7 @@ public class EventService {
         return response;
     }
 
+    //콘서트 디테일 내용
     private EventResponseDto convertToResponse(EventEntity event) {
         EventResponseDto response = convertToSimpleResponse(event);
         response.setEventDates(event.getEventDates().stream()
@@ -147,6 +151,7 @@ public class EventService {
                                 seatResponse.setId(seat.getId());
                                 seatResponse.setSeatNumber(seat.getSeatNumber());
                                 seatResponse.setPrice(seat.getPrice());
+                                seatResponse.setQuantity(seat.getQuantity());
                                 seatResponse.setStatus(seat.getStatus());
                                 return seatResponse;
                             })
