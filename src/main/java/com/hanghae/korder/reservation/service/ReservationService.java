@@ -9,10 +9,12 @@ import com.hanghae.korder.reservation.repository.ReservationRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -129,4 +131,20 @@ public class ReservationService {
         return response;
     }
 
+    @Scheduled(fixedRate = 3600000) // 1시간마다 실행
+    @Transactional
+    public void cancelExpiredReservations() {
+        LocalDateTime twentyFourHoursAgo = LocalDateTime.now().minusHours(24);
+        List<ReservationEntity> expiredReservations = reservationRepository.findByStatusAndCreatedAtBefore("pending", twentyFourHoursAgo);
+
+        for (ReservationEntity reservation : expiredReservations) {
+            EventSeatEntity seat = eventSeatRepository.findById(reservation.getSeatId())
+                    .orElseThrow(() -> new IllegalArgumentException("Seat not found"));
+            seat.setQuantity(seat.getQuantity() + reservation.getQuantity());
+            eventSeatRepository.save(seat);
+
+            reservation.setStatus("canceled");
+            reservationRepository.save(reservation);
+        }
+    }
 }
