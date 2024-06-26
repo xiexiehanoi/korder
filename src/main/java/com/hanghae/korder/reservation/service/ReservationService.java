@@ -2,6 +2,8 @@ package com.hanghae.korder.reservation.service;
 
 import com.hanghae.korder.event.entity.EventSeatEntity;
 import com.hanghae.korder.event.repository.EventSeatRepository;
+import com.hanghae.korder.purchase.entity.PurchaseEntity;
+import com.hanghae.korder.purchase.repository.PurchaseRepository;
 import com.hanghae.korder.reservation.dto.ReservationRequestDto;
 import com.hanghae.korder.reservation.dto.ReservationResponseDto;
 import com.hanghae.korder.reservation.entity.ReservationEntity;
@@ -23,6 +25,7 @@ import java.util.stream.Collectors;
 public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final EventSeatRepository eventSeatRepository;
+    private final PurchaseRepository purchaseRepository;
 
     @Transactional
     public ReservationResponseDto createReservation(ReservationRequestDto request, Long userId) {
@@ -52,8 +55,8 @@ public class ReservationService {
     }
 
     @Transactional
-    public ReservationResponseDto updateReservation(Long reservationId, ReservationRequestDto request) {
-        ReservationEntity reservation = reservationRepository.findById(reservationId)
+    public ReservationResponseDto updateReservation(Long reservationId, ReservationRequestDto request, Long userId) {
+        ReservationEntity reservation = reservationRepository.findByIdAndUserId(reservationId, userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Reservation not found"));
 
         EventSeatEntity seat = eventSeatRepository.findById(request.getSeatId())
@@ -84,8 +87,8 @@ public class ReservationService {
     }
 
     @Transactional
-    public void cancelReservation(Long reservationId) {
-        ReservationEntity reservation = reservationRepository.findById(reservationId)
+    public void cancelReservation(Long reservationId, Long userId) {
+        ReservationEntity reservation = reservationRepository.findByIdAndUserId(reservationId, userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Reservation not found"));
 
         EventSeatEntity seat = eventSeatRepository.findById(reservation.getSeatId())
@@ -98,12 +101,22 @@ public class ReservationService {
     }
 
     @Transactional
-    public void confirmReservation(Long reservationId) {
-        ReservationEntity reservation = reservationRepository.findById(reservationId)
+    public void confirmReservation(Long reservationId, Long userId) {
+        ReservationEntity reservation = reservationRepository.findByIdAndUserId(reservationId, userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Reservation not found"));
 
         reservation.setStatus("confirmed");
         reservationRepository.save(reservation);
+        System.out.println("reservation = " + reservation);
+
+        // 예약을 구매로 확정하는 로직
+        PurchaseEntity purchase = new PurchaseEntity();
+        purchase.setUserId(reservation.getUserId());
+        purchase.setReservationId(reservation.getId());
+        purchase.setStatus("pending"); // 예약 확인 후 상태를 pending로 설정
+        purchase.setPurchaseDate(LocalDateTime.now());
+        purchaseRepository.save(purchase);
+        System.out.println("purchase = " + purchase);
     }
 
     @Transactional

@@ -6,9 +6,12 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ReservationRepository extends JpaRepository<ReservationEntity, Long> {
     List<ReservationEntity> findByUserId(Long userId);
     List<ReservationEntity> findByStatusAndCreatedAtBefore(String status, LocalDateTime createdAt);
+
+    Optional<ReservationEntity> findByIdAndUserId(Long id, Long userId);
 }
