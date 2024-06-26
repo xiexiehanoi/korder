@@ -31,6 +31,7 @@ public class UserService {
     private final JwtUtil jwtUtil;
 
     public void signup(SignUpRequestDto requestDto) {
+        String name = requestDto.getName();
         String email = requestDto.getEmail();
         String password = passwordEncoder.encode(requestDto.getPassword());
 
@@ -41,7 +42,7 @@ public class UserService {
         }
 
         // 사용자 등록
-        UserEntity user = new UserEntity(requestDto.getName(), password, email, 0);
+        UserEntity user = new UserEntity(name, password, email, 0);
         userRepository.save(user);
     }
 

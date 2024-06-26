@@ -31,7 +31,7 @@ public class UserController {
     }
 
     @PostMapping("/signup")
-    public String signup(SignUpRequestDto requestDto) {
+    public String signup(@RequestBody SignUpRequestDto requestDto) {
         userService.signup(requestDto);
         return "redirect:/user/login-page";
     }

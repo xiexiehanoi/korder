@@ -1,6 +1,7 @@
 package com.hanghae.korder.reservation.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.hanghae.korder.event.entity.EventSeatEntity;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -60,5 +61,9 @@ public class ReservationEntity {
     @Column(name = "deleted_at")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime deletedAt;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "seat_id", insertable = false, updatable = false)
+    private EventSeatEntity seat;
 
 }
