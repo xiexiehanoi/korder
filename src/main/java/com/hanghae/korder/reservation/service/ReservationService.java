@@ -61,8 +61,9 @@ public class ReservationService {
         EventSeatEntity seat = eventSeatRepository.findById(request.getSeatId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Seat not found"));
 
+        // 특정 좌석을 ID로 조회하고, 좌석이 존재하지 않을 경우 404 예외를 발생시킴
         EventSeatEntity oldSeat = eventSeatRepository.findById(reservation.getSeatId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Old seat not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Seat not available"));
         oldSeat.setQuantity(oldSeat.getQuantity() + reservation.getQuantity());
         eventSeatRepository.save(oldSeat);
 
@@ -70,7 +71,6 @@ public class ReservationService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Insufficient seat quantity");
         }
 
-        seat.setQuantity(seat.getQuantity() - request.getQuantity());
         eventSeatRepository.save(seat);
 
         reservation.setEventId(request.getEventId());

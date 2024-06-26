@@ -37,9 +37,7 @@ public class PurchaseService {
         PurchaseEntity purchase = purchaseRepository.findByIdAndUserId(purchaseId, userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Purchase not found"));
 
-        logger.info("Current purchase status: {}", purchase.getStatus());
-
-        if ("cancel".equalsIgnoreCase(purchase.getStatus())) { // 수정: 대소문자 구분 없이 비교
+        if ("cancel".equals(purchase.getStatus())) {
             logger.warn("Cannot confirm a cancelled purchase, purchaseId: {}, userId: {}", purchaseId, userId);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot confirm a cancelled purchase");
         }
