@@ -36,7 +36,6 @@ public class ReservationService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Insufficient seat quantity");
         }
 
-        seat.setQuantity(seat.getQuantity() - request.getQuantity());
         eventSeatRepository.save(seat);
 
         ReservationEntity reservation = new ReservationEntity();
