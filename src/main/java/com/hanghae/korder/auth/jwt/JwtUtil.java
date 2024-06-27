@@ -3,6 +3,7 @@ package com.hanghae.korder.auth.jwt;
 import io.jsonwebtoken.*;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -11,6 +12,7 @@ import java.net.URLEncoder;
 import java.util.Date;
 
 @Component
+@RequiredArgsConstructor
 public class JwtUtil {
     @Value("${jwt.secret}")
     private String secretKey;
@@ -20,6 +22,41 @@ public class JwtUtil {
 
     @Value("${jwt.refresh-token-validity}")
     private long refreshTokenValidityInMilliseconds;
+
+    private final RedisUtil redisUtil;
+
+    // Refresh Token을 Redis에 저장
+    public void storeRefreshToken(String email, String refreshToken) {
+        redisUtil.set(email, refreshToken, (int) (refreshTokenValidityInMilliseconds / 1000 / 60)); // 수정:
+    }
+
+    // Refresh Token 검증
+    public boolean validateRefreshToken(String email, String refreshToken) {
+        String storedToken = (String) redisUtil.get(email);
+        return refreshToken.equals(storedToken);
+    }
+
+    // Refresh Token 삭제
+    public void deleteRefreshToken(String email) {
+        redisUtil.delete(email);
+    }
+
+    // Access Token 블랙리스트에 추가
+    public void blacklistAccessToken(String token) {
+        long expiration = getExpirationFromToken(token);
+        redisUtil.setBlackList(token, "blacklisted", (int) (expiration / 1000 / 60)); // 수정:
+    }
+
+    // 블랙리스트에 있는지 확인
+    public boolean isTokenBlacklisted(String token) {
+        return redisUtil.hasKeyBlackList(token);
+    }
+
+    // 토큰에서 만료 시간 추출
+    private long getExpirationFromToken(String token) {
+        Date expiration = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getExpiration();
+        return expiration.getTime() - System.currentTimeMillis();
+    }
 
     // Access Token 생성
     public String createAccessToken(String email) {

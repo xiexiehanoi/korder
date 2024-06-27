@@ -43,6 +43,13 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         }
 
         if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            if (jwtUtil.isTokenBlacklisted(token)) {
+                // 블랙리스트에 있으면 인증 실패
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.getWriter().write("블랙리스트에 등록된 토큰입니다.");
+                return;
+            }
+
             UserDetailsImpl userDetails = (UserDetailsImpl) userDetailsService.loadUserByUsername(email);
             if (jwtUtil.validateToken(token)) {
                 UsernamePasswordAuthenticationToken authentication =
@@ -53,5 +60,6 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         }
 
         chain.doFilter(request, response);
+
     }
 }

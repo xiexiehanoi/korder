@@ -68,9 +68,11 @@ public class UserService {
         jwtUtil.addAccessTokenToCookie(accessToken, res);
         jwtUtil.addRefreshTokenToCookie(refreshToken, res);
 
-        return new LoginResponseDto(accessToken, refreshToken);
-    }
+        // Refresh Token을 Redis에 저장
+        jwtUtil.storeRefreshToken(user.getEmail(), refreshToken);
 
+        return new LoginResponseDto(accessToken, refreshToken);
+}
     public MyPageDto getUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !(authentication.getPrincipal() instanceof UserDetailsImpl)) {
@@ -82,5 +84,11 @@ public class UserService {
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
 
         return new MyPageDto(user.getName(), user.getEmail(), user.getPoints());
+    }
+
+    public void logout(String accessToken) {
+        String email = jwtUtil.getEmailFromToken(accessToken);
+        jwtUtil.deleteRefreshToken(email);
+        jwtUtil.blacklistAccessToken(accessToken);
     }
 }
