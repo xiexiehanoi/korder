@@ -36,6 +36,6 @@ public class EventEntity {
     private LocalDateTime deletedAt;
 
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
-    @ToString.Exclude
+    @ToString.Exclude //수정: 순환 참조 방지를 위해 추가
     private List<EventDateEntity> eventDates = new ArrayList<>();
 }

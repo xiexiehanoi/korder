@@ -39,5 +39,6 @@ public class EventDateEntity {
     private EventEntity event;
 
     @OneToMany(mappedBy = "eventDate", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ToString.Exclude
     private List<EventSeatEntity> seats = new ArrayList<>();
 }
