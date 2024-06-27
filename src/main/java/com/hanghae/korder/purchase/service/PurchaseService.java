@@ -48,7 +48,7 @@ public class PurchaseService {
         UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
-        EventDetailDto eventDetail = eventRepository.findEventDetailsByEventId(reservation.getEventId())
+        EventDetailDto eventDetail = eventRepository.getEventDetails(reservation.getEventId())
                 .stream()
                 .filter(detail -> detail.getSeatId().equals(reservation.getSeatId()))
                 .findFirst()
@@ -85,7 +85,7 @@ public class PurchaseService {
         ReservationEntity reservation = reservationRepository.findById(purchase.getReservationId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Reservation not found"));
 
-        EventDetailDto eventDetail = eventRepository.findEventDetailsByEventId(reservation.getEventId())
+        EventDetailDto eventDetail = eventRepository.getEventDetails(reservation.getEventId())
                 .stream()
                 .filter(detail -> detail.getSeatId().equals(reservation.getSeatId()))
                 .findFirst()
@@ -105,7 +105,7 @@ public class PurchaseService {
         ReservationEntity reservation = reservationRepository.findById(purchase.getReservationId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Reservation not found"));
 
-        EventDetailDto eventDetail = eventRepository.findEventDetailsByEventId(reservation.getEventId())
+        EventDetailDto eventDetail = eventRepository.getEventDetails(reservation.getEventId())
                 .stream()
                 .filter(detail -> detail.getSeatId().equals(reservation.getSeatId()))
                 .findFirst()
@@ -124,7 +124,7 @@ public class PurchaseService {
             ReservationEntity reservation = reservationRepository.findById(purchase.getReservationId())
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Reservation not found"));
 
-            EventDetailDto eventDetail = eventRepository.findEventDetailsByEventId(reservation.getEventId())
+            EventDetailDto eventDetail = eventRepository.getEventDetails(reservation.getEventId())
                     .stream()
                     .filter(detail -> detail.getSeatId().equals(reservation.getSeatId()))
                     .findFirst()

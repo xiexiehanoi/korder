@@ -1,9 +1,9 @@
-package com.hanghae.korder.event.repository;
+package com.hanghae.korder.event.repository.querydsl;
 
 import com.hanghae.korder.event.dto.EventDetailDto;
 
 import java.util.List;
 
 public interface EventRepositoryCustom {
-    List<EventDetailDto> findEventDetailsByEventId(Long eventId);
+    List<EventDetailDto> getEventDetails(Long eventId);
 }

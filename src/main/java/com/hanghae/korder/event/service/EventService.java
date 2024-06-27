@@ -1,27 +1,20 @@
 package com.hanghae.korder.event.service;
 
-import com.hanghae.korder.auth.jwt.JwtUtil;
 import com.hanghae.korder.event.dto.EventDetailDto;
-import com.hanghae.korder.event.dto.EventDto;
 import com.hanghae.korder.event.dto.EventRequestDto;
 import com.hanghae.korder.event.dto.EventResponseDto;
 import com.hanghae.korder.event.entity.EventDateEntity;
 import com.hanghae.korder.event.entity.EventEntity;
 import com.hanghae.korder.event.entity.EventSeatEntity;
-import com.hanghae.korder.event.repository.EventDateRepository;
 import com.hanghae.korder.event.repository.EventRepository;
-import com.hanghae.korder.event.repository.EventSeatRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -121,7 +114,7 @@ public class EventService {
     }
 
     public List<EventDetailDto> getDetailEvent(Long eventId) {
-        return eventRepository.findEventDetailsByEventId(eventId);
+        return eventRepository.getEventDetails(eventId);
     }
 
     //콘서트 기본 내용

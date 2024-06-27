@@ -4,9 +4,7 @@ package com.hanghae.korder.event.service;
 import com.hanghae.korder.event.dto.EventDetailDto;
 import com.hanghae.korder.event.dto.EventRequestDto;
 import com.hanghae.korder.event.dto.EventResponseDto;
-import com.hanghae.korder.event.entity.EventDateEntity;
 import com.hanghae.korder.event.entity.EventEntity;
-import com.hanghae.korder.event.entity.EventSeatEntity;
 import com.hanghae.korder.event.repository.EventRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -111,13 +109,13 @@ public class EventServiceTest {
     @Test
     public void testGetDetailEvent() {
         EventDetailDto eventDetail = new EventDetailDto(1L, "Concert", "Music event", "Place", LocalDate.now(), 1L, "A1", BigDecimal.valueOf(100), "available");
-        when(eventRepository.findEventDetailsByEventId(anyLong())).thenReturn(Arrays.asList(eventDetail));
+        when(eventRepository.getEventDetails(anyLong())).thenReturn(Arrays.asList(eventDetail));
 
         List<EventDetailDto> detailDtoList = eventService.getDetailEvent(1L);
 
         assertNotNull(detailDtoList);
         assertEquals(1, detailDtoList.size());
-        verify(eventRepository, times(1)).findEventDetailsByEventId(anyLong());
+        verify(eventRepository, times(1)).getEventDetails(anyLong());
     }
 
     private EventRequestDto createEventRequestDto() {
