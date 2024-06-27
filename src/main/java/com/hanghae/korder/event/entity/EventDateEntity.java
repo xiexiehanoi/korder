@@ -1,10 +1,7 @@
 package com.hanghae.korder.event.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -26,19 +23,22 @@ public class EventDateEntity {
     private LocalDate date;
 
     @Column(name = "created_at")
+    @CreationTimestamp
     private LocalDateTime createdAt;
 
     @Column(name = "updated_at")
+    @UpdateTimestamp
     private LocalDateTime updatedAt;
 
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "event_id")
+    @JoinColumn(name = "event_id", nullable = false)
+    @ToString.Exclude
     private EventEntity event;
 
     @OneToMany(mappedBy = "eventDate", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ToString.Exclude
     private List<EventSeatEntity> seats = new ArrayList<>();
-
 }

@@ -1,5 +1,7 @@
 package com.hanghae.korder.reservation.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.hanghae.korder.event.entity.EventSeatEntity;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -47,14 +49,21 @@ public class ReservationEntity {
     private LocalDateTime reservationDate;
 
     @CreationTimestamp
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
     @Column(name = "deleted_at")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime deletedAt;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "seat_id", insertable = false, updatable = false)
+    private EventSeatEntity seat;
 
 }

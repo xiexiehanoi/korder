@@ -1,10 +1,7 @@
 package com.hanghae.korder.event.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -40,6 +37,7 @@ public class EventSeatEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_date_id", nullable = false)
+    @ToString.Exclude //수정: 순환 참조 방지를 위해 추가
     private EventDateEntity eventDate;
 
     @Version

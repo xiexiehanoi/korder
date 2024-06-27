@@ -28,20 +28,23 @@ public class ReservationController {
 
     @PutMapping("/{reservationId}")
     public ResponseEntity<ReservationResponseDto> updateReservation(@PathVariable Long reservationId, @RequestBody ReservationRequestDto request, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        ReservationResponseDto response = reservationService.updateReservation(reservationId, request);
+        Long userId = userDetails.getUserId();
+        ReservationResponseDto response = reservationService.updateReservation(reservationId, request, userId);
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{reservationId}")
     public ResponseEntity<ReservationStatusResponseDto> cancelReservation(@PathVariable Long reservationId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        reservationService.cancelReservation(reservationId);
+        Long userId = userDetails.getUserId();
+        reservationService.cancelReservation(reservationId, userId);
         ReservationStatusResponseDto response = new ReservationStatusResponseDto(reservationId, "canceled");
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/confirm/{reservationId}")
     public ResponseEntity<ReservationStatusResponseDto> confirmReservation(@PathVariable Long reservationId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        reservationService.confirmReservation(reservationId);
+        Long userId = userDetails.getUserId();
+        reservationService.confirmReservation(reservationId, userId);
         ReservationStatusResponseDto response = new ReservationStatusResponseDto(reservationId, "confirmed");
         return ResponseEntity.ok(response);
     }

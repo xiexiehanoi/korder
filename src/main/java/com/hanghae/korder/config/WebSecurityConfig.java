@@ -36,11 +36,11 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
                                 .requestMatchers("/user/**").permitAll()
-                                .requestMatchers("/", "/css/**", "/js/**").permitAll() // 정적 리소스 허용
+                                .requestMatchers("/", "/css/**", "/js/**","/swagger-ui/**", "/api-docs/**").permitAll() // 정적 리소스 허용
                                 .requestMatchers("/").permitAll() // 루트 경로 허용
-                                .requestMatchers("/event/**").authenticated()
+                                .requestMatchers("/event/**","/reservation/**","/purchase/**").authenticated()
                                 .anyRequest().authenticated())
-                .addFilterBefore(new JwtTokenFilter(jwtUtil, userDetailsService), UsernamePasswordAuthenticationFilter.class);
+               .addFilterBefore(new JwtTokenFilter(jwtUtil, userDetailsService), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
