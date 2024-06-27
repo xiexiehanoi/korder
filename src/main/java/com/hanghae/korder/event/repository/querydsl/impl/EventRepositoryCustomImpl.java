@@ -54,5 +54,5 @@ public class EventRepositoryCustomImpl implements EventRepositoryCustom {
                 .fetchOne();
 
         return Optional.ofNullable(foundEvent);
-
+    }
 }
