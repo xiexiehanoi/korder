@@ -2,6 +2,7 @@ package com.hanghae.korder.auth.jwt;
 
 import io.jsonwebtoken.*;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -122,4 +123,17 @@ public class JwtUtil {
     public void addRefreshTokenToCookie(String token, HttpServletResponse res) {
         addJwtToCookie(token, res, "Refresh-Token", refreshTokenValidityInMilliseconds);
     }
+
+    public String getRefreshTokenFromRequest(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("Refresh-Token".equals(cookie.getName())) {
+                    return cookie.getValue();
+                }
+            }
+        }
+        return null;
+    }
+
 }
