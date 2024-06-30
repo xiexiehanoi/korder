@@ -28,7 +28,7 @@ public class JwtUtil {
 
     // Refresh Token을 Redis에 저장
     public void storeRefreshToken(String email, String refreshToken) {
-        redisUtil.set(email, refreshToken, (int) (refreshTokenValidityInMilliseconds / 1000 / 60)); // 수정:
+        redisUtil.set(email, refreshToken, (int) (refreshTokenValidityInMilliseconds / 1000 / 60));
     }
 
     // Refresh Token 검증
@@ -45,7 +45,7 @@ public class JwtUtil {
     // Access Token 블랙리스트에 추가
     public void blacklistAccessToken(String token) {
         long expiration = getExpirationFromToken(token);
-        redisUtil.setBlackList(token, "blacklisted", (int) (expiration / 1000 / 60)); // 수정:
+        redisUtil.setBlackList(token, "blacklisted", (int) (expiration / 1000 / 60));
     }
 
     // 블랙리스트에 있는지 확인
