@@ -8,12 +8,12 @@ on:
 env:
   ENVIRONMENT: dev
   ECR_NAME: korder
-  ECR_URI: ${{ secrets.ECR.DEV.URI }}
+  ECR_URI: ${{ secrets.ECR_DEV_URI }}
   AWS_REGION: ${{ secrets.AWS_REGION }}
 
 jobs:
   build-and-deploy:
-    name: 빌드 그리고 배포
+    name: Build and Deploy
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
@@ -29,7 +29,7 @@ jobs:
       - name: Login to Amazon ECR
         id: login-ecr
         run: |
-          aws ecr get-login-password —region ${{ secrets.AWS_REGION }} | docker login —username AWS —password-stdin ${{ secrets.ECR_DEV_URI }}
+          aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.ECR_DEV_URI }}
 
       - name: Build, Tag and Push Docker Image
         run: |
