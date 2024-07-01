@@ -43,6 +43,7 @@ out/
 
 # Application specific sensitive files
 *.yml
+!dev-cd-pipline.yml
 *.properties
 
 # Docker
