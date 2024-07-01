@@ -22,14 +22,14 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          aws-region: ${{ secret.AWS_REGION }}
+          aws-region: ${{ secrets.AWS_REGION }}
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
       - name: Login to Amazon ECR
         id: login-ecr
         run: |
-          aws ecr get-login-password —region ${{ secrets.AWS_REGION }} | docker login —username AWS —password-stdin ${{ secret.ECR_DEV_URI }}
+          aws ecr get-login-password —region ${{ secrets.AWS_REGION }} | docker login —username AWS —password-stdin ${{ secrets.ECR_DEV_URI }}
 
       - name: Build, Tag and Push Docker Image
         run: |
@@ -40,9 +40,9 @@ jobs:
       - name: Deploy to EC2
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secret.EC2_HOST }}
-          username: ${{ secret.EC2_USER }}
-          key: ${{ secret.AWS_EC2_PEM_KEY }}
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.AWS_EC2_PEM_KEY }}
           script: |
             docker pull ${{ secrets.ECR_DEV_URI }}/${{ env.ECR_NAME }}:latest
             docker stop korder-container || true

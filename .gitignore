@@ -45,10 +45,3 @@ out/
 *.yml
 !.github/workflows/prod_pipepline.yml
 *.properties
-
-# Docker
-/docker-compose.yml
-/docker-compose.yaml
-/docker-compose.override.yml
-*docker-compose*.yml
-*docker-compose*.yaml
