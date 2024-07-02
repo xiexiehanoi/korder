@@ -58,16 +58,16 @@ jobs:
             echo "${{ secrets.AWS_SECRET_ACCESS_KEY }}" | docker login -u "${{ secrets.AWS_ACCESS_KEY }}" —password-stdin ${{ secrets.ECR_DEV_URI }}
             
             # Pull the latest image
-            docker pull ${{ secrets.ECR_DEV_URI }}:latest
+            sudo docker pull ${{ secrets.ECR_DEV_URI }}:latest
             
             # If a container with the same name exists, stop and remove it
             if [ "$(docker ps -q -f name=korder_container)" ]; then
-              docker stop korder_container
-              docker rm korder_container
+              sudo docker stop korder_container
+              sudo docker rm korder_container
             fi
             
             # Run the container
-            docker run -d \
+            sudo docker run -d \
               —name app_container \
               -p 8080:8080 \
               —env POSTGRESQL_USERNAME=${{ secrets.POSTGRESQL_USERNAME }} \
@@ -77,4 +77,3 @@ jobs:
               —env POSTGRESQL_DB_NAME=${{ secrets.POSTGRESQL_DBNAME }} \
               —env JWT_SECRET_KEY=${{ secrets.JWT_SECRET }} \
               ${{ secrets.ECR_DEV_URI }}:latest
-            
