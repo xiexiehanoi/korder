@@ -55,7 +55,7 @@ jobs:
           username: ${{ env.EC2_USER }}
           key: ${{ secrets.AWS_EC2_PEM_KEY }}
           script: |
-            echo "${{ secrets.AWS_SECRET_ACCESS_KEY }}" | docker login -u "${{ secrets.AWS_ACCESS_KEY }}" —password-stdin ${{ secrets.ECR_DEV_URI }}
+            echo "${{ secrets.AWS_SECRET_ACCESS_KEY }}" | docker login -u "${{ secrets.AWS_ACCESS_KEY }}" —password-stdin ${{ secrets.ECR_ROOT_URI }}
             
             # Pull the latest image
             sudo docker pull ${{ secrets.ECR_DEV_URI }}:latest
