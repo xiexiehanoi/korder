@@ -45,8 +45,8 @@ public class ReservationService {
         reservation.setSeatId(request.getSeatId());
         reservation.setQuantity(request.getQuantity());
 
-        BigDecimal totalPrice = seat.getPrice().multiply(BigDecimal.valueOf(request.getQuantity()));
-        reservation.setTotalPrice(totalPrice);
+//        BigDecimal totalPrice = seat.getPrice().multiply(BigDecimal.valueOf(request.getQuantity()));
+//        reservation.setTotalPrice(totalPrice);
         reservation.setStatus("pending");
 
         ReservationEntity savedReservation = reservationRepository.save(reservation);
@@ -79,7 +79,7 @@ public class ReservationService {
         reservation.setQuantity(request.getQuantity());
 
         BigDecimal totalPrice = seat.getPrice().multiply(BigDecimal.valueOf(request.getQuantity()));
-        reservation.setTotalPrice(totalPrice);
+//        reservation.setTotalPrice(totalPrice);
 
         ReservationEntity updatedReservation = reservationRepository.save(reservation);
         return convertToDto(updatedReservation);

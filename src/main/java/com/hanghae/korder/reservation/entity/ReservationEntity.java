@@ -38,8 +38,8 @@ public class ReservationEntity {
     @Column(name = "quantity", nullable = false)
     private int quantity = 1;
 
-    @Column(name = "total_price", nullable = false)
-    private BigDecimal totalPrice;
+//    @Column(name = "total_price", nullable = false)
+//    private BigDecimal totalPrice;
 
     @Column(name = "status", nullable = false)
     private String status = "pending";

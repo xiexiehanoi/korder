@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Entity
 @Table(name = "purchases", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"user_id", "reservation_id"})
+        @UniqueConstraint(columnNames = "reservation_id")
 })
 public class PurchaseEntity {
 
@@ -27,7 +27,7 @@ public class PurchaseEntity {
     private Long reservationId;
 
     @Column(name = "status", nullable = false, length = 50)
-    private String status = "completed";
+    private String status = "pending";
 
     @Column(name = "purchase_date", nullable = false, updatable = false)
     private LocalDateTime purchaseDate;

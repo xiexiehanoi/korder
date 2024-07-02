@@ -36,7 +36,7 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
                                 .requestMatchers("/user/**").permitAll()
-                                .requestMatchers("/", "/css/**", "/js/**","/swagger-ui/**", "/api-docs/**").permitAll() // 정적 리소스 허용
+                                .requestMatchers("/", "/css/**", "/js/**","/swagger-ui/**", "/api-docs/**","/api/login","/api/refresh").permitAll() // 정적 리소스 허용
                                 .requestMatchers("/").permitAll() // 루트 경로 허용
                                 .requestMatchers("/event/**","/reservation/**","/purchase/**").authenticated()
                                 .anyRequest().authenticated())
