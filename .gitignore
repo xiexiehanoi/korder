@@ -42,6 +42,6 @@ out/
 .vscode/
 
 # Application specific sensitive files
-*.yml
+#*.yml
 !.github/workflows/prod_pipepline.yml
-*.properties
+#*.properties

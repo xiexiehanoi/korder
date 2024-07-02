@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:alpine
+    container_name: postgres_db
+    environment:
+      DB_HOST: ${AWS_DB_HOST}
+      DB_NAME: ${AWS_DB_NAME}
+      DB_USER: ${AWS_DB_USER}
+      DB_PASSWORD: ${AWS_DB_PASSWORD}
+      DB_PORT: ${AWS_DB_PORT}
+    ports:
+      - "${AWS_DB_PORT}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app_network
+
+#springboot
+  app:
+    container_name: springboot_server
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "${APP_PORT}:6500"
+    depends_on:
+      - db
+    environment:
+      DB_HOST: ${AWS_DB_HOST}
+      DB_NAME: ${AWS_DB_NAME}
+      DB_USER: ${AWS_DB_USER}
+      DB_PASSWORD: ${AWS_DB_PASSWORD}
+      DB_PORT: ${AWS_DB_PORT}
+    networks:
+      - app_network
+
+networks:
+  app_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
