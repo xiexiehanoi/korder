@@ -47,19 +47,19 @@ jobs:
           docker build -t ${{ secrets.ECR_DEV_URI }} .
           docker push ${{ secrets.ECR_DEV_URI }}:latest
 
-#      - name: Deploy to EC2
-#        uses: appleboy/ssh-action@master
-#        with:
-#          host: ${{ secrets.EC2_HOST }}
-#          username: ${{ secrets.EC2_USER }}
-#          key: ${{ secrets.AWS_EC2_PEM_KEY }}
-#          script: |
-#            docker pull ${{ secrets.ECR_DEV_URI }}/${{ env.ECR_NAME }}:latest
-#            docker stop korder-container || true
-#            docker rm korder-container || true
-#            docker run -d --name korder-container -p 80:6500 \
-#              -e DB_HOST=${{ secrets.POSTGRESQL_END_POINT }} \
-#              -e DB_NAME=${{ secrets.POSTGRESQL_DBNAME }} \
-#              -e DB_USER=${{ secrets.POSTGRESQL_USERNAME }} \
-#              -e DB_PASSWORD=${{ secrets.POSTGRESQL_PASSWORD }} \
-#              ${{ secrets.ECR_DEV_URI }}/${{ env.ECR_NAME }}:latest
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.AWS_EC2_PEM_KEY }}
+          script: |
+            docker pull ${{ secrets.ECR_DEV_URI }}:latest
+            docker stop korder-container || true
+            docker rm korder-container || true
+            docker run -d --name korder-container -p 80:6500 \
+              -e DB_HOST=${{ secrets.POSTGRESQL_END_POINT }} \
+              -e DB_NAME=${{ secrets.POSTGRESQL_DBNAME }} \
+              -e DB_USER=${{ secrets.POSTGRESQL_USERNAME }} \
+              -e DB_PASSWORD=${{ secrets.POSTGRESQL_PASSWORD }} \
+              ${{ secrets.ECR_DEV_URI }}/${{ env.ECR_NAME }}:latest
