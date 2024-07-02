@@ -5,11 +5,10 @@ services:
     image: postgres:alpine
     container_name: postgres_db
     environment:
-      DB_HOST: ${AWS_DB_HOST}
-      DB_NAME: ${AWS_DB_NAME}
-      DB_USER: ${AWS_DB_USER}
-      DB_PASSWORD: ${AWS_DB_PASSWORD}
-      DB_PORT: ${AWS_DB_PORT}
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_PORT: ${DB_PORT}
     ports:
       - "${AWS_DB_PORT}:5432"
     volumes:
@@ -17,7 +16,6 @@ services:
     networks:
       - app_network
 
-#springboot
   app:
     container_name: springboot_server
     build:
@@ -28,11 +26,16 @@ services:
     depends_on:
       - db
     environment:
-      DB_HOST: ${AWS_DB_HOST}
-      DB_NAME: ${AWS_DB_NAME}
-      DB_USER: ${AWS_DB_USER}
-      DB_PASSWORD: ${AWS_DB_PASSWORD}
-      DB_PORT: ${AWS_DB_PORT}
+      DB_URL: ${DB_URL}
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_PORT: ${DB_PORT}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_ACCESSTOKEN_EXPIRED: ${JWT_ACCESSTOKEN_EXPIRED}
+      JWT_REFRESHTOKEN_EXPIRED: ${JWT_REFRESHTOKEN_EXPIRED}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
     networks:
       - app_network
 
