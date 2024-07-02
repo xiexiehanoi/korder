@@ -77,3 +77,4 @@ jobs:
               —env POSTGRESQL_DB_NAME=${{ secrets.POSTGRESQL_DBNAME }} \
               —env JWT_SECRET_KEY=${{ secrets.JWT_SECRET }} \
               ${{ secrets.ECR_DEV_URI }}:latest
+            
