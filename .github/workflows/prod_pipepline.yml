@@ -7,7 +7,6 @@ on:
 
 env:
   ENVIRONMENT: dev
-  ECR_NAME: korder
   ECR_URI: ${{ secrets.ECR_DEV_URI }}
   AWS_REGION: ${{ secrets.AWS_REGION }}
 
@@ -45,9 +44,8 @@ jobs:
 
       - name: Build, Tag and Push Docker Image
         run: |
-          docker build -t ${{ env.ECR_NAME }} .
-          docker tag ${{ env.ECR_NAME }}:latest ${{ secrets.ECR_DEV_URI }}/${{ env.ECR_NAME }}:latest
-          docker push ${{ secrets.ECR_DEV_URI }}/${{ env.ECR_NAME }}:latest
+          docker build -t ${{ secrets.ECR_DEV_URI }} .
+          docker push ${{ secrets.ECR_DEV_URI }}:latest
 
 #      - name: Deploy to EC2
 #        uses: appleboy/ssh-action@master
