@@ -68,12 +68,12 @@ jobs:
             
             # Run the container
             sudo docker run -d \
-              —name app_container \
+              --name korder_container \
               -p 8080:8080 \
-              —env POSTGRESQL_USERNAME=${{ secrets.POSTGRESQL_USERNAME }} \
-              —env POSTGRESQL_PASSWORD=${{ secrets.POSTGRESQL_PASSWORD }} \
-              —env POSTGRESQL_HOST=${{ secrets.POSTGRESQL_END_POINT}} \
-              —env POSTGRESQL_PORT=${{ secrets.POSTGRESQL_PORT }} \
-              —env POSTGRESQL_DB_NAME=${{ secrets.POSTGRESQL_DBNAME }} \
-              —env JWT_SECRET_KEY=${{ secrets.JWT_SECRET }} \
+              --env POSTGRESQL_USERNAME=${{ secrets.POSTGRESQL_USERNAME }} \
+              --env POSTGRESQL_PASSWORD=${{ secrets.POSTGRESQL_PASSWORD }} \
+              --env POSTGRESQL_HOST=${{ secrets.POSTGRESQL_END_POINT }} \
+              --env POSTGRESQL_PORT=${{ secrets.POSTGRESQL_PORT }} \
+              --env POSTGRESQL_DB_NAME=${{ secrets.POSTGRESQL_DBNAME }} \
+              --env JWT_SECRET_KEY=${{ secrets.JWT_SECRET }} \
               ${{ secrets.ECR_DEV_URI }}:latest
