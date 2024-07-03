@@ -75,5 +75,5 @@ jobs:
               --env POSTGRESQL_HOST=${{ secrets.POSTGRESQL_END_POINT }} \
               --env POSTGRESQL_PORT=${{ secrets.POSTGRESQL_PORT }} \
               --env POSTGRESQL_DB_NAME=${{ secrets.POSTGRESQL_DBNAME }} \
-              --env JWT_SECRET_KEY=${{ secrets.JWT_SECRET }} \
+              --env JWT_SECRET=${{ secrets.JWT_SECRET }} \
               ${{ secrets.ECR_DEV_URI }}:latest
