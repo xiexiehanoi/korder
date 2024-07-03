@@ -45,7 +45,7 @@ jobs:
 
       - name: Build, Tag and Push Docker Image
         run: |
-          docker build -t ${{ secrets.ECR_DEV_URI }} .
+          docker build -t ${{ secrets.ECR_DEV_URI }}:latest .
           docker push ${{ secrets.ECR_DEV_URI }}:latest
 
       - name: EC2에서 Docker Compose 실행
@@ -61,7 +61,7 @@ jobs:
             sudo docker pull ${{ secrets.ECR_DEV_URI }}:latest
             
             # If a container with the same name exists, stop and remove it
-            if [ "$(docker ps -q -f name=korder_container)" ]; then
+            if [ "$(sudo docker ps -q -f name=korder_container)" ]; then
               sudo docker stop korder_container
               sudo docker rm korder_container
             fi
