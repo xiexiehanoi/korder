@@ -5,12 +5,12 @@ services:
     image: postgres:alpine
     container_name: postgres_db
     environment:
-      POSTGRES_DB: ${DB_NAME}
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_PORT: ${DB_PORT}
+      POSTGRES_DB: ${AWS_DB_NAME}
+      POSTGRES_USER: ${AWS_DB_USER}
+      POSTGRES_PASSWORD: ${AWS_DB_PASSWORD}
+      POSTGRES_PORT: ${AWS_DB_PORT}
     ports:
-      - ":5432"
+      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
@@ -35,11 +35,11 @@ services:
       - db
       - redis
     environment:
-      DB_URL: db
-      DB_NAME: ${DB_NAME}
-      DB_USER: ${DB_USER}
-      DB_PASSWORD: ${DB_PASSWORD}
-      DB_PORT: ${DB_PORT}
+      AWS_DB_HOST: ${AWS_DB_HOST}
+      AWS_DB_NAME: ${AWS_DB_NAME}
+      AWS_DB_USER: ${AWS_DB_USER}
+      AWS_DB_PASSWORD: ${AWS_DB_PASSWORD}
+      AWS_DB_PORT: ${AWS_DB_PORT}
       JWT_SECRET: ${JWT_SECRET}
       JWT_ACCESSTOKEN_EXPIRED: ${JWT_ACCESSTOKEN_EXPIRED}
       JWT_REFRESHTOKEN_EXPIRED: ${JWT_REFRESHTOKEN_EXPIRED}
