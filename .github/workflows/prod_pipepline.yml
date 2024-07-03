@@ -1,4 +1,4 @@
-name: PostgreSQL 워크플로
+name: PostgreSQL workflow
 
 on:
   push:
