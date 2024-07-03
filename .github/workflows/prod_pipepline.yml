@@ -70,11 +70,11 @@ jobs:
             sudo docker run -d \
               --name korder_container \
               -p 8080:8080 \
-              --env POSTGRESQL_USERNAME=${{ secrets.POSTGRESQL_USERNAME }} \
-              --env POSTGRESQL_PASSWORD=${{ secrets.POSTGRESQL_PASSWORD }} \
-              --env POSTGRESQL_HOST=${{ secrets.POSTGRESQL_END_POINT }} \
-              --env POSTGRESQL_PORT=${{ secrets.POSTGRESQL_PORT }} \
-              --env POSTGRESQL_DB_NAME=${{ secrets.POSTGRESQL_DBNAME }} \
+              --env DB_USER=$DB_USER \
+              --env DB_PASSWORD=$DB_PASSWORD \
+              --env DB_URL=$DB_URL \
+              --env DB_PORT=$DB_PORT \
+              --env DB_NAME=$DB_NAME \
               --env JWT_SECRET=${{ secrets.JWT_SECRET }} \
               --env JWT_ACCESSTOKEN_EXPIRED=${{ secrets.JWT_ACCESSTOKEN_EXPIRED }} \
               --env JWT_REFRESHTOKEN_EXPIRED=${{ secrets.JWT_REFRESHTOKEN_EXPIRED }} \
