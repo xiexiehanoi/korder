@@ -55,9 +55,9 @@ jobs:
           username: ${{ env.EC2_USER }}
           key: ${{ secrets.AWS_EC2_PEM_KEY }}
           source: |
-            docker-compose-dev.yml
-            .env.dev
-            src/main/resources/application-dev.yml
+            ${{ github.workspace }}/docker-compose-dev.yml
+            ${{ github.workspace }}/.env.dev
+            ${{ github.workspace }}/src/main/resources/application-dev.yml
           target: /home/ubuntu/
 
       - name: EC2에서 Docker Compose 실행
