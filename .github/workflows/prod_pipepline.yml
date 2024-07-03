@@ -76,4 +76,6 @@ jobs:
               --env POSTGRESQL_PORT=${{ secrets.POSTGRESQL_PORT }} \
               --env POSTGRESQL_DB_NAME=${{ secrets.POSTGRESQL_DBNAME }} \
               --env JWT_SECRET=${{ secrets.JWT_SECRET }} \
+              --env JWT_ACCESSTOKEN_EXPIRED=${{ secrets.JWT_ACCESSTOKEN_EXPIRED }} \
+              --env JWT_REFRESHTOKEN_EXPIRED=${{ secrets.JWT_REFRESHTOKEN_EXPIRED }} \
               ${{ secrets.ECR_DEV_URI }}:latest
