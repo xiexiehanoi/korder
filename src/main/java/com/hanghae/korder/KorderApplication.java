@@ -1,16 +1,15 @@
-package com.hanghae.korder;
-
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
-import org.springframework.scheduling.annotation.EnableScheduling;
-
-@SpringBootApplication
-@EnableScheduling
-public class KorderApplication {
-
-    public static void main(String[] args) {
-        SpringApplication.run(KorderApplication.class, args);
-    }
-
-}
+//package com.hanghae.korder;
+//
+//import org.springframework.boot.SpringApplication;
+//import org.springframework.boot.autoconfigure.SpringBootApplication;
+//import org.springframework.scheduling.annotation.EnableScheduling;
+//
+//@SpringBootApplication
+//@EnableScheduling
+//public class KorderApplication {
+//
+//    public static void main(String[] args) {
+//        SpringApplication.run(KorderApplication.class, args);
+//    }
+//
+//}
