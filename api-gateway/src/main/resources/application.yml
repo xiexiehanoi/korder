@@ -1,0 +1,32 @@
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: user-service
+          uri: lb://USER-SERVICE
+          predicates:
+            - Path=/user/**
+        - id: event-service
+          uri: lb://EVENT-SERVICE
+          predicates:
+            - Path=/event/**
+        - id: reservation-service
+          uri: lb://RESERVATION-SERVICE
+          predicates:
+            - Path=/reservation/**
+        - id: purchase-service
+          uri: lb://PURCHASE-SERVICE
+          predicates:
+            - Path=/purchase/**
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+server:
+  port: 8080  # API Gateway의 포트 설정
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:6501/eureka/

@@ -78,6 +78,16 @@ configurations {
     querydsl.extendsFrom compileClasspath
 }
 
+// bootjar 생성 x
+bootJar {
+    enabled = false
+}
+
+//라이브러리 jar생성
+jar {
+    enabled = true
+}
+
 tasks.named('test') {
     useJUnitPlatform()
 }
