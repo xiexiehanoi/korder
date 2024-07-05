@@ -2,6 +2,8 @@ server:
   port: 6502
 
 spring:
+  application:
+    name: api-gateway
   cloud:
     gateway:
       routes:
@@ -35,5 +37,11 @@ jwt:
 
 eureka:
   client:
+    registerWithEureka: true
+    fetchRegistry: true
     serviceUrl:
       defaultZone: http://localhost:6501/eureka/
+  instance:
+    preferIpAddress: true
+    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+    hostname: api-gateway  # 호스트 이름을 명확하게 설정

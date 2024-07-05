@@ -3,13 +3,15 @@ server:
 
 eureka:
   server:
-    enable-self-preservation: false
+    enable-self-preservation: true
     eviction-interval-timer-in-ms: 1000
   client:
     register-with-eureka: false
     fetch-registry: false
   instance:
-    hostname: localhost
+    hostname: discovery-server
+    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+    preferIpAddress: true
 
 spring:
   application:
