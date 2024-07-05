@@ -1,4 +1,4 @@
-package com.hanghae.dicoveryserver;
+package com.hanghae.discoveryserver;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

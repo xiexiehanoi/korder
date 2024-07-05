@@ -1,4 +1,8 @@
 spring:
+
+  server:
+    port: 6502
+
   cloud:
     gateway:
       routes:
