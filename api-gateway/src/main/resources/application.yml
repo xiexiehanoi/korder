@@ -10,11 +10,11 @@ spring:
         - id: user-service
           uri: lb://USER-SERVICE
           predicates:
-            - Path=/user/**, /auth/**
+            - Path=/user/**
         - id: event-service
           uri: lb://EVENT-SERVICE
           predicates:
-            - Path=/event/**
+            - Path=/event/**, /auth/**
         - id: reservation-service
           uri: lb://RESERVATION-SERVICE
           predicates:
