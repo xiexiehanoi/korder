@@ -12,15 +12,14 @@ public class SecurityConfig {
 
     @Bean
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
-        http
+        return http
                 .authorizeExchange(exchanges -> exchanges
-                        .pathMatchers("/public/**").permitAll()
+                        .pathMatchers("/user/signUp", "/user/signIn", "/auth/login").permitAll()
                         .anyExchange().authenticated()
                 )
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .formLogin(ServerHttpSecurity.FormLoginSpec::disable)
-                .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable);
-
-        return http.build();
+                .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
+                .build();
     }
 }

@@ -22,13 +22,20 @@ public class JwtAuthenticationFilter implements WebFilter {
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
-        String token = extractToken(exchange.getRequest());
-        if (token != null && jwtUtil.validateToken(token)) {
-            String username = jwtUtil.getUsernameFromToken(token);
-            Authentication authentication = new UsernamePasswordAuthenticationToken(username, null, null); // 사용자 권한 설정
-            return chain.filter(exchange)
-                    .contextWrite(ReactiveSecurityContextHolder.withAuthentication(authentication));
+        ServerHttpRequest request = exchange.getRequest();
+        String token = request.getHeaders().getFirst("Authorization");
+
+        if (token != null && token.startsWith("Bearer ")) {
+            token = token.substring(7);
+            if (jwtUtil.validateToken(token)) {
+                String username = jwtUtil.getUsernameFromToken(token);
+                ServerHttpRequest mutatedRequest = request.mutate()
+                        .header("X-Auth-User", username)
+                        .build();
+                return chain.filter(exchange.mutate().request(mutatedRequest).build());
+            }
         }
+
         return chain.filter(exchange);
     }
 
