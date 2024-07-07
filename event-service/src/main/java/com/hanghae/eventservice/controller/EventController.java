@@ -16,7 +16,6 @@ public class EventController {
 
     @PostMapping("")
     public ResponseEntity<Mono<String>> eventCreate(@RequestBody EventDto dto, @RequestHeader("X-User-id") Long userId) {
-        System.out.println("userId : "+userId);
         return ResponseEntity.ok(eventService.createEvent(dto, userId));
     }
 

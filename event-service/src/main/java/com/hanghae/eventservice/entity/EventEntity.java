@@ -64,7 +64,6 @@ public class EventEntity {
     @Column(name = "updated_at")
     @UpdateTimestamp
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Seoul")
-
     private LocalDateTime updatedAt;
 
     @Column(name = "deleted_at")

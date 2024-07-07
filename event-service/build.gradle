@@ -36,6 +36,9 @@ dependencies {
     // Spring Security
     implementation 'org.springframework.boot:spring-boot-starter-security'
 
+    // OpenFeign
+    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+
     //webflux
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
 
