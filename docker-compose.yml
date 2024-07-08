@@ -43,7 +43,7 @@ services:
       JWT_SECRET: ${JWT_SECRET}
       JWT_ACCESSTOKEN_EXPIRED: ${JWT_ACCESSTOKEN_EXPIRED}
       JWT_REFRESHTOKEN_EXPIRED: ${JWT_REFRESHTOKEN_EXPIRED}
-      REDIS_HOST: redis_server
+      REDIS_HOST: redis_server_local
       REDIS_PORT: ${REDIS_PORT}
     networks:
       - app_network
