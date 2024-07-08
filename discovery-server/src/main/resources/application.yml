@@ -1,5 +1,5 @@
 server:
-  port: 6501
+  port: 8761
 
 eureka:
   server:

@@ -9,4 +9,6 @@ public interface UserService {
     void signUp(SignUpRequestDto requestDto);
 
     SignInResponseDto signIn(SignInRequestDto requestDto);
+
+    void getUserById(Long id);
 }

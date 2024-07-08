@@ -1,11 +1,11 @@
 server:
-  port: 6505
+  port: 8084
 
 spring:
   application:
     name: reservation-service
   datasource:
-    url: jdbc:postgresql://localhost:5432/korder-reservation
+    url: jdbc:postgresql://localhost:5432/korder_reservation
     username: korder
     password: hanghae123
     driver-class-name: org.postgresql.Driver
@@ -19,7 +19,7 @@ eureka:
     registerWithEureka: true
     fetchRegistry: true
     serviceUrl:
-      defaultZone: http://localhost:6501/eureka/
+      defaultZone: http://localhost:8761/eureka/
   instance:
     preferIpAddress: true
     instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}

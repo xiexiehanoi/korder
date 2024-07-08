@@ -48,4 +48,10 @@ public class UserServiceImpl implements UserService {
 
         return new SignInResponseDto(user.getId(), user.getEmail(), user.getName());
     }
+
+    @Override
+    public void getUserById(Long id) {
+        userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("없는 유저입니다."));
+    }
 }

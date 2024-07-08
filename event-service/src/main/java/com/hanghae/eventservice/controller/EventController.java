@@ -19,4 +19,16 @@ public class EventController {
         return ResponseEntity.ok(eventService.createEvent(dto, userId));
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<Void> getEventById(@PathVariable Long id) {
+        eventService.getEventById(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/{id}/version")
+    public ResponseEntity<Void> updateEventVersion(@PathVariable Long id) {
+        eventService.updateEventVersion(id);
+        return ResponseEntity.ok().build();
+    }
+
 }

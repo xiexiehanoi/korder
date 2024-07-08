@@ -24,6 +24,12 @@ public class UserController {
         return ResponseEntity.ok(responseDto);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<Void> getUserById(@PathVariable Long id) {
+        userService.getUserById(id);
+        return ResponseEntity.ok().build();
+    }
+
 //    @GetMapping("/mypage")
 //    public ResponseEntity<MyPageDto> myPage(@RequestHeader("Authorization") String token) {
 //        String email = jwtUtil.getEmailFromToken(token.replace("Bearer ", ""));

@@ -6,4 +6,8 @@ import reactor.core.publisher.Mono;
 public interface EventService {
 
     Mono<String> createEvent(EventDto dto, Long userId);
+
+    void getEventById(Long id);
+
+    void updateEventVersion(Long id);
 }

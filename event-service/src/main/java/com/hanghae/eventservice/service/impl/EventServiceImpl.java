@@ -4,6 +4,7 @@ import com.hanghae.eventservice.dto.EventDto;
 import com.hanghae.eventservice.entity.EventEntity;
 import com.hanghae.eventservice.repository.EventRepository;
 import com.hanghae.eventservice.service.EventService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
@@ -31,5 +32,20 @@ public class EventServiceImpl implements EventService {
             eventRepository.save(event);
             return "이벤트가 생성되었습니다.";
         });
+    }
+
+    @Override
+    public void getEventById(Long id) {
+        eventRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("이벤트를 찾을 수 없습니다."));
+    }
+
+    @Override
+    @Transactional
+    public void updateEventVersion(Long id) {
+        EventEntity event = eventRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("이벤트를 찾을 수 없습니다."));
+        // 버전만 증가
+        event.setVersion(event.getVersion() + 1);
     }
 }
