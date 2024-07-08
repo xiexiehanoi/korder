@@ -1,16 +1,11 @@
-# General
 HELP.md
 .gradle
 build/
-.env
-.env*
-
-# Gradle specific
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
 
-# STS (Spring Tool Suite)
+### STS ###
 .apt_generated
 .classpath
 .factorypath
@@ -22,7 +17,7 @@ bin/
 !**/src/main/**/bin/
 !**/src/test/**/bin/
 
-# IntelliJ IDEA
+### IntelliJ IDEA ###
 .idea
 *.iws
 *.iml
@@ -31,17 +26,12 @@ out/
 !**/src/main/**/out/
 !**/src/test/**/out/
 
-# NetBeans
+### NetBeans ###
 /nbproject/private/
 /nbbuild/
 /dist/
 /nbdist/
 /.nb-gradle/
 
-# VS Code
+### VS Code ###
 .vscode/
-
-# Application specific sensitive files
-#*.yml
-!.github/workflows/prod_pipepline.yml
-#*.properties
