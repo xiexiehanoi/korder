@@ -6,7 +6,7 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 
 @SpringBootApplication
-@EnableFeignClients(basePackages = "com.hanghae.reservationservice.feign")
+@EnableFeignClients
 @EnableDiscoveryClient
 public class ReservationServiceApplication {
 

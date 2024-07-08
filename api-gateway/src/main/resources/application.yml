@@ -19,6 +19,9 @@ spring:
           uri: lb://RESERVATION-SERVICE
           predicates:
             - Path=/reservation/**
+          filters:
+            - RewritePath=/reservation/(?<segment>.*), /$\{segment}
+            - PreserveHostHeader
         - id: purchase-service
           uri: lb://PURCHASE-SERVICE
           predicates:

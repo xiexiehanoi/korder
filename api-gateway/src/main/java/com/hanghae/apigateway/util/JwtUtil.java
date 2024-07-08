@@ -26,9 +26,11 @@ public class JwtUtil {
 
     private Key key;
 
+
+
     @PostConstruct
     public void init() {
-        this.key = Keys.hmacShaKeyFor(secretKey.getBytes());
+        this.key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
     }
 
     public String createAccessToken(String username) {

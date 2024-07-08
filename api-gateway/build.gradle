@@ -50,6 +50,12 @@ dependencies {
 
     // SLF4J
      implementation 'org.bgee.log4jdbc-log4j2:log4jdbc-log4j2-jdbc4.1:1.16'
+
+    //open-feign
+    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+
+    //actuator
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
 }
 
 dependencyManagement {
