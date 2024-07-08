@@ -36,16 +36,29 @@ public class JwtAuthenticationFilter implements WebFilter {
         }
 
         String token = extractToken(request);
-        if (token != null && jwtUtil.validateToken(token)) {
-            String username = jwtUtil.getUsernameFromToken(token);
-            UsernamePasswordAuthenticationToken authentication =
-                    new UsernamePasswordAuthenticationToken(username, null, null);
-            return chain.filter(exchange)
-                    .contextWrite(ReactiveSecurityContextHolder.withAuthentication(authentication));
-        } else {
-            logger.debug("No token or invalid token format");
-            return onError(exchange, "Invalid token or missing token", HttpStatus.UNAUTHORIZED);
+        logger.debug("Extracted token: {}", token);
+
+        if (token != null) {
+            boolean isValid = jwtUtil.validateToken(token);
+            logger.debug("Token validation result: {}", isValid);
+
+            if (isValid) {
+                String username = jwtUtil.getUsernameFromToken(token);
+                logger.debug("Username from token: {}", username);
+
+                UsernamePasswordAuthenticationToken authentication =
+                        new UsernamePasswordAuthenticationToken(username, null, null);
+                logger.debug("Created authentication object: {}", authentication);
+
+                return chain.filter(exchange)
+                        .contextWrite(ReactiveSecurityContextHolder.withAuthentication(authentication))
+                        .doOnSuccess(v -> logger.debug("Filter chain completed successfully"))
+                        .doOnError(e -> logger.error("Error in filter chain", e));
+            }
         }
+
+        logger.debug("No token or invalid token format");
+        return onError(exchange, "Invalid token or missing token", HttpStatus.UNAUTHORIZED);
     }
 
     private String extractToken(ServerHttpRequest request) {

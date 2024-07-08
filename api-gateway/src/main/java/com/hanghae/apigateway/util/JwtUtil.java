@@ -9,7 +9,9 @@ import org.springframework.beans.factory.annotation.Value;
 
 import org.springframework.stereotype.Component;
 
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
+import java.util.Base64;
 import java.util.Date;
 
 @Component
@@ -29,7 +31,11 @@ public class JwtUtil {
 
     @PostConstruct
     public void init() {
-        this.key = Keys.hmacShaKeyFor(secretKey.getBytes());
+        byte[] keyBytes = Base64.getDecoder().decode(secretKey);
+        if (keyBytes.length < 32) {
+            throw new IllegalArgumentException("The secret key must be at least 256 bits.");
+        }
+        this.key = Keys.hmacShaKeyFor(keyBytes);
     }
 
     public String createAccessToken(String username) {
@@ -49,7 +55,7 @@ public class JwtUtil {
                 .setClaims(claims)
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
-                .signWith(key)
+                .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
 
@@ -58,6 +64,8 @@ public class JwtUtil {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
         } catch (Exception e) {
+            System.out.println("Token validation failed: " + e.getMessage());
+            e.printStackTrace();
             return false;
         }
     }
