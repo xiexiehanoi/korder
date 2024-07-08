@@ -20,9 +20,9 @@ public class EventController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Void> getEventById(@PathVariable Long id) {
-        eventService.getEventById(id);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<EventDto> getEventById(@PathVariable Long id) {
+        EventDto event = eventService.getEventById(id);
+        return ResponseEntity.ok(event);
     }
 
     @PutMapping("/{id}/version")

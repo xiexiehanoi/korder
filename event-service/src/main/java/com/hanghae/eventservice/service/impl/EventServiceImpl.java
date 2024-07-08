@@ -35,9 +35,10 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public void getEventById(Long id) {
-        eventRepository.findById(id)
+    public EventDto getEventById(Long id) {
+        EventEntity event = eventRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("이벤트를 찾을 수 없습니다."));
+        return EventDto.fromEntity(event);
     }
 
     @Override

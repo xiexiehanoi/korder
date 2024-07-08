@@ -5,7 +5,7 @@ spring:
   application:
     name: reservation-service
   datasource:
-    url: jdbc:postgresql://localhost:5432/korder-purchase
+    url: jdbc:postgresql://localhost:5432/korder_purchase
     username: korder
     password: hanghae123
     driver-class-name: org.postgresql.Driver
