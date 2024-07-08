@@ -45,3 +45,9 @@ eureka:
     preferIpAddress: true
     instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
     hostname: api-gateway  # 호스트 이름을 명확하게 설정
+
+    logging:
+      level:
+        com.hanghae.apigateway: DEBUG
+        org.springframework.security: DEBUG
+        org.springframework.web: DEBUG
