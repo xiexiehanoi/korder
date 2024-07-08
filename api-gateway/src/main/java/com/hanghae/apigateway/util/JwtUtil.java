@@ -27,10 +27,9 @@ public class JwtUtil {
     private Key key;
 
 
-
     @PostConstruct
     public void init() {
-        this.key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+        this.key = Keys.hmacShaKeyFor(secretKey.getBytes());
     }
 
     public String createAccessToken(String username) {
@@ -50,7 +49,7 @@ public class JwtUtil {
                 .setClaims(claims)
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
-                .signWith(key, SignatureAlgorithm.HS256)
+                .signWith(key)
                 .compact();
     }
 
