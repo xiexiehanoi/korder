@@ -18,7 +18,7 @@ spring:
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     show-sql: true
   servlet:
     encoding:
@@ -37,8 +37,15 @@ eureka:
 
 logging:
   level:
-    root: DEBUG
+    root: INFO
     org:
       springframework:
-        web: TRACE
-        jpa: DEBUG
+        web: INFO
+        jpa: INFO
+      apache:
+        hc: INFO
+      springframework.web.client.RestTemplate: INFO
+      com:
+        netflix:
+          discovery: INFO
+      com.zaxxer.hikari: INFO  # HikariCP 로그 레벨 설정
