@@ -6,16 +6,16 @@ import com.hanghae.eventservice.entity.QEventInventory;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.LockModeType;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.StaleObjectStateException;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
-public class EventInventoryRepositoryImpl implements  EventInventoryRepositoryCustom {
+public class EventInventoryRepositoryImpl implements EventInventoryRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
-
 
     @Override
     public Optional<EventInventory> findByEventIdWithLock(Long eventId) {
@@ -24,7 +24,7 @@ public class EventInventoryRepositoryImpl implements  EventInventoryRepositoryCu
         EventInventory result = queryFactory
                 .selectFrom(eventInventory)
                 .where(eventInventory.eventId.eq(eventId))
-                .setLockMode(LockModeType.OPTIMISTIC)
+                .setLockMode(LockModeType.PESSIMISTIC_WRITE)
                 .fetchOne();
 
         return Optional.ofNullable(result);
