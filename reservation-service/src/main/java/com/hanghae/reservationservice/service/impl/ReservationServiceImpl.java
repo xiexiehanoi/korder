@@ -56,10 +56,23 @@ public class ReservationServiceImpl implements ReservationService {
                 throw new RuntimeException("서비스가 현재 이용 불가합니다. 나중에 다시 시도해주세요.");
             } catch (Exception e) {
                 logger.error("Error creating reservation: {}", e.getMessage());
+                saveFailedReservation(dto, "failed_unknown");
                 throw new RuntimeException("예약 생성 중 오류가 발생했습니다.");
             }
         });
     }
+
+    private void saveFailedReservation(ReservationDto dto, String status) {
+        ReservationEntity failedReservation = ReservationEntity.builder()
+                .userId(dto.getUserId())
+                .eventId(dto.getEventId())
+                .quantity(dto.getQuantity())
+                .status(status)
+                .reservationDate(LocalDateTime.now())
+                .build();
+        reservationRepository.save(failedReservation);
+    }
+
 
     @Override
     @Transactional

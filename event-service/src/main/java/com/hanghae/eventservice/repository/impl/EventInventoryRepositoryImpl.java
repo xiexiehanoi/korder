@@ -6,7 +6,6 @@ import com.hanghae.eventservice.entity.QEventInventory;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.LockModeType;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.StaleObjectStateException;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -24,7 +23,7 @@ public class EventInventoryRepositoryImpl implements EventInventoryRepositoryCus
         EventInventory result = queryFactory
                 .selectFrom(eventInventory)
                 .where(eventInventory.eventId.eq(eventId))
-                .setLockMode(LockModeType.PESSIMISTIC_WRITE)
+                .setLockMode(LockModeType.OPTIMISTIC)
                 .fetchOne();
 
         return Optional.ofNullable(result);

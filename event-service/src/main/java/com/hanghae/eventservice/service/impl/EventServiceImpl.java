@@ -6,7 +6,7 @@ import com.hanghae.eventservice.entity.EventInventory;
 import com.hanghae.eventservice.repository.EventInventoryRepository;
 import com.hanghae.eventservice.repository.EventRepository;
 import com.hanghae.eventservice.service.EventService;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
@@ -53,6 +53,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public EventDto getEventById(Long id) {
         EventEntity event = eventRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("이벤트를 찾을 수 없습니다."));
