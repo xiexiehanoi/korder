@@ -32,9 +32,6 @@ public class ReservationServiceImpl implements ReservationService {
     public Mono<String> createReservation(ReservationDto dto) {
         return Mono.fromCallable(() -> {
             try {
-                // User 확인
-                userFeignClient.getUserById(dto.getUserId());
-
                 // Event 확인 및 재고 업데이트
                 eventFeignClient.getEventById(dto.getEventId());
                 eventFeignClient.updateEventInventory(dto.getEventId(), -dto.getQuantity());
@@ -76,11 +73,15 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Override
     @Transactional
-    public Mono<String> confirmReservation(Long reservationId) {
+    public Mono<String> confirmReservation(Long reservationId, Long userId) {
         return Mono.fromCallable(() -> {
             try {
                 ReservationEntity reservation = reservationRepository.findById(reservationId)
                         .orElseThrow(() -> new RuntimeException("예약을 찾을 수 없습니다."));
+
+                if (!reservation.getUserId().equals(userId)) {
+                    throw new RuntimeException("해당 예약에 대한 권한이 없습니다.");
+                }
 
                 if ("confirmed".equals(reservation.getStatus())) {
                     return "이미 확정된 예약입니다.";

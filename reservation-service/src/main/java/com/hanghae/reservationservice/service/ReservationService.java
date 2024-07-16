@@ -7,5 +7,5 @@ import reactor.core.publisher.Mono;
 
 public interface ReservationService {
     Mono<String> createReservation(ReservationDto dto);
-    Mono<String> confirmReservation(Long reservationId);
+    Mono<String> confirmReservation(Long reservationId, Long userId);
 }
