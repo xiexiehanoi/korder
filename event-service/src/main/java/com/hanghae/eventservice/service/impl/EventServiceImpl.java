@@ -6,6 +6,12 @@ import com.hanghae.eventservice.entity.EventInventory;
 import com.hanghae.eventservice.repository.EventInventoryRepository;
 import com.hanghae.eventservice.repository.EventRepository;
 import com.hanghae.eventservice.service.EventService;
+import jakarta.persistence.OptimisticLockException;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -61,7 +67,8 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    @Transactional
+    @Retryable(value = {ObjectOptimisticLockingFailureException.class, OptimisticLockException.class}, maxAttempts = 3, backoff = @Backoff(delay = 100)) //낙관적 Lock 사용시
+    @Transactional(isolation = Isolation.REPEATABLE_READ, propagation = Propagation.REQUIRES_NEW) //격리 레벨
     public void updateEventInventory(Long eventId, int quantityChange) {
         EventInventory inventory = eventInventoryRepository.findByEventIdWithLock(eventId)
                 .orElseThrow(() -> new RuntimeException("이벤트 인벤토리 정보를 찾을 수 없습니다."));

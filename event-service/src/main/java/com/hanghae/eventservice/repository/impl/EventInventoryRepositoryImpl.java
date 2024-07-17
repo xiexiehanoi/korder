@@ -24,6 +24,7 @@ public class EventInventoryRepositoryImpl implements EventInventoryRepositoryCus
                 .selectFrom(eventInventory)
                 .where(eventInventory.eventId.eq(eventId))
                 .setLockMode(LockModeType.OPTIMISTIC)
+//                .setHint("jakarta.persistence.lock.timeout", 4000) //비관적 Lock 사용시
                 .fetchOne();
 
         return Optional.ofNullable(result);

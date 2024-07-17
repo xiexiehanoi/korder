@@ -27,8 +27,7 @@ public class EventInventory {
 
     @Version
     @Column(nullable = false)
-    @Builder.Default
-    private Long version =0L;
+    private Long version;
 
     @Column(nullable = false, name = "total_quantity")
     private int totalQuantity;
