@@ -44,3 +44,8 @@ logging:
   level:
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+
+#redis
+  redis:
+    host: localhost
+    port: 6379

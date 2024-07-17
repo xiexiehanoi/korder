@@ -3,15 +3,15 @@ package com.hanghae.reservationservice.service.impl;
 import com.hanghae.reservationservice.dto.ReservationDto;
 import com.hanghae.reservationservice.entity.ReservationEntity;
 import com.hanghae.reservationservice.feign.EventFeignClient;
-import com.hanghae.reservationservice.feign.UserFeignClient;
+import com.hanghae.reservationservice.queue.ReservationQueue;
 import com.hanghae.reservationservice.repository.ReservationRepository;
 import com.hanghae.reservationservice.service.ReservationService;
 import feign.FeignException;
-import jakarta.persistence.OptimisticLockException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
@@ -22,15 +22,32 @@ import java.time.LocalDateTime;
 public class ReservationServiceImpl implements ReservationService {
 
     private final ReservationRepository reservationRepository;
-    private final UserFeignClient userFeignClient;
     private final EventFeignClient eventFeignClient;
+    private final ReservationQueue reservationQueue;
 
     private static final Logger logger = LoggerFactory.getLogger(ReservationServiceImpl.class);
 
     @Override
-    @Transactional
     public Mono<String> createReservation(ReservationDto dto) {
         return Mono.fromCallable(() -> {
+            try {
+                // 큐에 예약 요청 추가
+                reservationQueue.enqueue(dto);
+                logger.info("Reservation request added to queue for event: {}", dto.getEventId());
+                return "예약 요청이 큐에 추가되었습니다. 잠시 후 처리됩니다.";
+            } catch (Exception e) {
+                logger.error("Error adding reservation to queue: {}", e.getMessage());
+                throw new RuntimeException("예약 요청 추가 중 오류가 발생했습니다.");
+            }
+        });
+    }
+
+    @Scheduled(fixedRate = 100) // 100ms마다 실행
+    @Transactional
+    public void processReservationQueue() {
+        ReservationDto dto = reservationQueue.dequeue();
+        if (dto != null) {
+            logger.info("Processing reservation from queue: {}", dto);
             try {
                 // Event 확인 및 재고 업데이트
                 eventFeignClient.getEventById(dto.getEventId());
@@ -39,24 +56,21 @@ public class ReservationServiceImpl implements ReservationService {
                 ReservationEntity reservation = ReservationEntity.builder()
                         .userId(dto.getUserId())
                         .eventId(dto.getEventId())
+                        .quantity(dto.getQuantity())
                         .status("pending")
                         .reservationDate(LocalDateTime.now())
                         .build();
 
-                reservationRepository.save(reservation);
-                return "예약이 생성되었습니다.";
-            } catch (OptimisticLockException e) {
-                logger.error("Optimistic lock exception: {}", e.getMessage());
-                throw new RuntimeException("다른 사용자가 이미 이 이벤트를 수정했습니다. 다시 시도해주세요.");
+                reservation = reservationRepository.save(reservation);
+                logger.info("예약 성공: {}", reservation.getId());
             } catch (FeignException e) {
-                logger.error("Feign client error: {}", e.getMessage());
-                throw new RuntimeException("서비스가 현재 이용 불가합니다. 나중에 다시 시도해주세요.");
+                logger.error("예약 중 Feign client error 발생: {}", e.getMessage());
+                saveFailedReservation(dto, "failed_service_unavailable");
             } catch (Exception e) {
-                logger.error("Error creating reservation: {}", e.getMessage());
+                logger.error("예약 큐 작업으로부터 Error 발생: {}", e.getMessage());
                 saveFailedReservation(dto, "failed_unknown");
-                throw new RuntimeException("예약 생성 중 오류가 발생했습니다.");
             }
-        });
+        }
     }
 
     private void saveFailedReservation(ReservationDto dto, String status) {
@@ -68,6 +82,7 @@ public class ReservationServiceImpl implements ReservationService {
                 .reservationDate(LocalDateTime.now())
                 .build();
         reservationRepository.save(failedReservation);
+        logger.warn("예약 저장 실패: {}", failedReservation.getId());
     }
 
 
