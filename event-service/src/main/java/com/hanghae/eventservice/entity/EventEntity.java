@@ -51,11 +51,6 @@ public class EventEntity {
     @Builder.Default
     private String status="available";
 
-    @Version
-    @Column(nullable = false)
-    @Builder.Default
-    private Long version =0L;
-
     @Column(name = "created_at")
     @CreationTimestamp
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Seoul")

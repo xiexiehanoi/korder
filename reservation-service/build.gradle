@@ -15,6 +15,7 @@ java {
 
 repositories {
     mavenCentral()
+    maven { url 'https://repo.spring.io/milestone' }
 }
 
 ext {
@@ -43,6 +44,7 @@ dependencies {
 
     // 추가된 OpenFeign 의존성
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+    implementation 'com.playtika.reactivefeign:feign-reactor-spring-cloud-starter:4.0.0'
 
     //webflux
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
@@ -55,6 +57,11 @@ dependencies {
 //    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
 //    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
 //    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+
+    //redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis-reactive'
+    implementation 'org.springframework.boot:spring-boot-starter-cache'  // 스프링 캐시 추상화
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'io.projectreactor:reactor-test'

@@ -25,9 +25,9 @@ public class EventController {
         return ResponseEntity.ok(event);
     }
 
-    @PutMapping("/{id}/version")
-    public ResponseEntity<Void> updateEventVersion(@PathVariable Long id) {
-        eventService.updateEventVersion(id);
+    @PutMapping("/{id}/inventory")
+    public ResponseEntity<Void> updateEventInventory(@PathVariable Long id, @RequestParam int quantityChange) {
+        eventService.updateEventInventory(id, quantityChange);
         return ResponseEntity.ok().build();
     }
 
