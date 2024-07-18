@@ -20,6 +20,7 @@ public class EventDto {
     private int quantity;
     private String status;
 
+
     // EventEntity를 EventDto로 변환하는 정적 메서드 추가
     public static EventDto fromEntity(EventEntity event) {
         return EventDto.builder()

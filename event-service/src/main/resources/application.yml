@@ -37,8 +37,17 @@ eureka:
 
 logging:
   level:
-    root: DEBUG
+    root: INFO
     org:
       springframework:
-        web: TRACE
-        jpa: DEBUG
+        web: INFO
+        jpa: INFO
+      apache:
+        hc: INFO
+      springframework.web.client.RestTemplate: INFO
+      com:
+        netflix:
+          discovery: INFO
+      com.zaxxer.hikari: INFO
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE

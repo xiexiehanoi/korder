@@ -28,8 +28,8 @@ public class AuthService {
                 .retrieve()
                 .bodyToMono(SignInResponseDto.class)
                 .flatMap(userDto -> {
-                    String accessToken = jwtUtil.createAccessToken(userDto.getEmail());
-                    String refreshToken = jwtUtil.createRefreshToken(userDto.getEmail());
+                    String accessToken = jwtUtil.createAccessToken(userDto.getEmail(), userDto.getId());
+                    String refreshToken = jwtUtil.createRefreshToken(userDto.getEmail(),userDto.getId());
 
                     return redisUtil.setValue(userDto.getEmail(), refreshToken, Duration.ofDays(7))
                             .thenReturn(Map.of(
@@ -43,12 +43,13 @@ public class AuthService {
     public Mono<TokenPair> refreshToken(String refreshToken) {
         if (jwtUtil.validateToken(refreshToken)) {
             String username = jwtUtil.getUsernameFromToken(refreshToken);
+            Long userId = Long.valueOf(jwtUtil.getUsernameFromToken(refreshToken));
 
             return redisUtil.getValue(username)
                     .flatMap(storedRefreshToken -> {
                         if (storedRefreshToken.equals(refreshToken)) {
-                            String newAccessToken = jwtUtil.createAccessToken(username);
-                            String newRefreshToken = jwtUtil.createRefreshToken(username);
+                            String newAccessToken = jwtUtil.createAccessToken(username, userId);
+                            String newRefreshToken = jwtUtil.createRefreshToken(username, userId);
 
                             return redisUtil.setValue(username, newRefreshToken, Duration.ofDays(7))
                                     .thenReturn(new TokenPair(newAccessToken, newRefreshToken));
