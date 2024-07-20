@@ -1,7 +1,40 @@
-# 예약 시스템 프로젝트
+# 예약 시스템 프로젝트 
+:date: 2024년 6월 ~ 2024년 7월
+ 
+![Java](https://img.shields.io/badge/Java-17-orange)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.3.1-brightgreen)
+![Spring Cloud](https://img.shields.io/badge/Spring%20Cloud-%20-green)
+![Redis](https://img.shields.io/badge/Redis-%20-red)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-%20-blue)
+![Docker](https://img.shields.io/badge/Docker-%20-blue)
+![QueryDSL](https://img.shields.io/badge/QueryDSL-%20-yellow)
+![JPA](https://img.shields.io/badge/JPA-%20-lightgrey)
+![JWT](https://img.shields.io/badge/JWT-%20-yellowgreen)
 
-## 프로젝트 개요
-이 프로젝트는 예약 시스템을 구축하기 위한 것입니다. 초기에는 모놀리식 아키텍처로 시작하여, 이후 마이크로서비스 아키텍처(MSA)로 전환했습니다. 과부하 및 동시 접속을 처리할 수 있도록 설계되었으며, Redis 캐시와 메시지 큐를 활용한 시스템입니다.
+## 프로젝트 소개
+Redis를 활용한 캐싱 전략, 대규모 티켓 예약 처리
+
+## 프로젝트 목표
+1000명 이상의 회원이 동시에 예약
+
+🚀 시작 가이드
+📥설치
+```
+$ git clone --branch local-deploy https://github.com/jsjune/E-commerce.git](https://github.com/xiexiehanoi/korder
+$ cd korder
+```
+
+▶️실행(Rdis)
+```
+$ ./gradlew docker
+$ docker-compose up -d
+```
+
+## 주요 기능
+- 사용자 인증 및 관리
+- 이벤트 생성 및 관리
+- 실시간 티켓 예약 처리
+- 티켓 재고 관리
 
 ## 기능 및 기술적 구현
 1. **초기 모놀리식 아키텍처**
@@ -23,21 +56,6 @@
 
 ## 트러블슈팅 사례
 
- 
-## 아키텍처 구성 설명
-1. **사용자 인터페이스**
-- 사용자(User)는 예약 요청을 API 게이트웨이(ApiGateway)를 통해 진행.
-2. **게이트웨이**
-- **API 게이트웨이(ApiGateway)**: 사용자 요청을 각 서비스로 전달.
-3. **서비스 레이어**
-- **예약 서비스(ReservationService)**: 예약 요청을 처리하고, Redis 캐시를 확인 및 업데이트하며, 메시지 큐에 예약 요청을 추가.
-- **이벤트 서비스(EventService)**: 이벤트 재고를 확인하고, 데이터베이스에서 재고를 업데이트.
-- **사용자 서비스(UserService)**: 사용자 정보를 관리.
-4. **인프라스트럭처 레이어**
-- **Redis 캐시**: 캐시된 데이터를 관리하여 빠른 데이터 접근을 제공합니다.
-- **메시지 큐**: 비동기 처리를 통해 시스템의 확장성과 성능을 높입니다.
-- **데이터베이스**: 각 서비스에 필요한 데이터베이스로, 예약, 이벤트, 사용자 정보 등을 관리합니다. 각 서비스는 독립적인 데이터베이스를 사용합니다.
-  
  
 
 ## 시퀀스 다이어그램
