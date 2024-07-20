@@ -14,8 +14,9 @@
 ## 프로젝트 소개
 Redis를 활용한 캐싱 전략, 대규모 티켓 예약 처리
 
-## 프로젝트 목표
-1000명 이상의 회원이 동시에 예약
+## 프로젝트 주요 목표
+1. 마이크로서비스 아키텍처 구현
+2. 대규모 동시 접속 처리
 
 🚀 시작 가이드
 📥설치
@@ -27,7 +28,7 @@ $ cd korder
 ▶️실행(Rdis)
 ```
 $ ./gradlew docker
-$ docker-compose up -d
+$ docker-compose -f redis-compose.yml up -d
 ```
 
 ## 주요 기능
@@ -81,3 +82,7 @@ sequenceDiagram
     ReservationService->>Redis: 캐시 업데이트
     ReservationService->>User: 예약 완료 응답
 ```
+
+## ERD
+![image](https://github.com/user-attachments/assets/0fd38778-4d6b-433a-8ef3-e29f9e563262)
+
