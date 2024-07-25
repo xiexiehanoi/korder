@@ -7,6 +7,7 @@ import com.hanghae.eventservice.repository.EventInventoryRepository;
 import com.hanghae.eventservice.repository.EventRepository;
 import com.hanghae.eventservice.service.EventService;
 import jakarta.persistence.OptimisticLockException;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
@@ -71,28 +72,29 @@ public class EventServiceImpl implements EventService {
             maxAttempts = 5,
             backoff = @Backoff(delay = 200, multiplier = 2)) //낙관적 Lock 사용시
     @Transactional(isolation = Isolation.REPEATABLE_READ, propagation = Propagation.REQUIRES_NEW) //격리 레벨
+    @CachePut(value = "eventReservations", key = "#eventId")
 //    @Transactional
-    public void updateEventInventory(Long eventId, int quantityChange) {
+    public EventDto updateEventInventory(Long eventId, int quantity) {
         EventInventory inventory = eventInventoryRepository.findByEventIdWithLock(eventId)
                 .orElseThrow(() -> new RuntimeException("이벤트 인벤토리 정보를 찾을 수 없습니다."));
 
-        int newRemainingQuantity = inventory.getRemainingQuantity() + quantityChange;
+        int newRemainingQuantity = inventory.getRemainingQuantity() + quantity;
         if (newRemainingQuantity < 0) {
             throw new RuntimeException("티켓 재고가 부족합니다.");
         }
 
-        inventory.setRemainingQuantity(newRemainingQuantity);
-        eventInventoryRepository.save(inventory);
+        EventEntity event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new RuntimeException("이벤트를 찾을 수 없습니다."));
+
 
         if (newRemainingQuantity == 0) {
-            // 재고가 소진되면 이벤트 상태를 'sold out'으로 변경
-            EventEntity event = eventRepository.findById(eventId)
-                    .orElseThrow(() -> new RuntimeException("이벤트를 찾을 수 없습니다."));
             event.setStatus("sold out");
-            eventRepository.save(event);
             logger.info("Event ID: {} is now sold out", eventId);
         }
 
-        logger.info("Event inventory updated for event ID: {}, new remaining quantity: {}", eventId, newRemainingQuantity);
+        event = eventRepository.save(event);
+        logger.info("Event inventory 업데이트 for event ID: {}, new remaining quantity: {}", eventId, newRemainingQuantity);
+
+        return EventDto.fromEntity(event);
     }
 }

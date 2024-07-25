@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @FeignClient(name = "event-service", configuration = FeignClientConfig.class)
 public interface EventFeignClient {
-    @Cacheable(value = "events", key = "#id")
-    @GetMapping("/event/{id}")
-    void getEventById(@PathVariable("id") Long id);
+//    @Cacheable(value = "events", key = "#id")
+//    @GetMapping("/event/{id}")
+//    void getEventById(@PathVariable("id") Long id);
 
     @CachePut(value = "events", key = "#id")
     @PutMapping("/event/{id}/inventory")
