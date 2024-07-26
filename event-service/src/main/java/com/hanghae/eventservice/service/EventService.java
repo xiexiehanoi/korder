@@ -9,6 +9,6 @@ public interface EventService {
 
     EventDto getEventById(Long id);
 
-    void updateEventInventory(Long eventId, int quantityChange);
+    EventDto updateEventInventory(Long eventId, int quantity);
 
 }

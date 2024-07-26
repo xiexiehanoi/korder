@@ -6,15 +6,16 @@ import com.hanghae.reservationservice.feign.EventFeignClient;
 import com.hanghae.reservationservice.queue.ReservationQueue;
 import com.hanghae.reservationservice.repository.ReservationRepository;
 import com.hanghae.reservationservice.service.ReservationService;
-import feign.FeignException;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.StaleObjectStateException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
 import reactor.core.publisher.Mono;
 
@@ -28,6 +29,8 @@ public class ReservationServiceImpl implements ReservationService {
     private final EventFeignClient eventFeignClient;
     private final ReservationQueue reservationQueue;
     private final TransactionTemplate transactionTemplate;
+    private static final String STATUS_PENDING = "pending";
+    private static final String STATUS_CONFIRMED = "confirmed";
 
     private static final Logger logger = LoggerFactory.getLogger(ReservationServiceImpl.class);
 
@@ -59,7 +62,6 @@ public class ReservationServiceImpl implements ReservationService {
                         status.setRollbackOnly();
                         logger.error("예약 처리 실패. 이벤트: {}, 사용자: {}, 오류: {}",
                                 dto.getEventId(), dto.getUserId(), e.getMessage(), e);
-                        saveFailedReservation(dto, "처리_실패");
                     }
                     return null;
                 });
@@ -70,55 +72,27 @@ public class ReservationServiceImpl implements ReservationService {
         }
     }
 
+
+    @Retryable(value = {ObjectOptimisticLockingFailureException.class, StaleObjectStateException.class},
+            maxAttempts = 5, backoff = @Backoff(delay = 100))
     private void processReservation(ReservationDto dto) throws Exception {
-        logger.info("예약 처리 시작. 이벤트: {}, 사용자: {}", dto.getEventId(), dto.getUserId());
+//        eventFeignClient.getEventById(dto.getEventId());
+        logger.info("이벤트 확인 성공. 이벤트: {}", dto.getEventId());
 
-        try {
-            eventFeignClient.getEventById(dto.getEventId());
-            logger.info("이벤트 확인 성공. 이벤트: {}", dto.getEventId());
-        } catch (Exception e) {
-            logger.error("이벤트 확인 실패. 이벤트: {}, 오류: {}", dto.getEventId(), e.getMessage(), e);
-            throw e;
-        }
-
-        try {
-            eventFeignClient.updateEventInventory(dto.getEventId(), -dto.getQuantity());
-            logger.info("이벤트 재고 업데이트 성공. 이벤트: {}, 수량: {}", dto.getEventId(), dto.getQuantity());
-        } catch (Exception e) {
-            logger.error("이벤트 재고 업데이트 실패. 이벤트: {}, 수량: {}, 오류: {}",
-                    dto.getEventId(), dto.getQuantity(), e.getMessage(), e);
-            throw e;
-        }
+        eventFeignClient.updateEventInventory(dto.getEventId(), -dto.getQuantity());
+        logger.info("이벤트 재고 업데이트 성공. 이벤트: {}, 수량: {}", dto.getEventId(), dto.getQuantity());
 
         ReservationEntity reservation = ReservationEntity.builder()
                 .userId(dto.getUserId())
                 .eventId(dto.getEventId())
                 .quantity(dto.getQuantity())
-                .status("pending")
+                .status(STATUS_PENDING)
                 .reservationDate(LocalDateTime.now())
                 .build();
 
-        try {
-            reservation = reservationRepository.save(reservation);
-            logger.info("예약 데이터베이스 저장 성공. ID: {}, 이벤트: {}, 사용자: {}",
-                    reservation.getId(), dto.getEventId(), dto.getUserId());
-        } catch (Exception e) {
-            logger.error("예약 데이터베이스 저장 실패. 이벤트: {}, 사용자: {}, 오류: {}",
-                    dto.getEventId(), dto.getUserId(), e.getMessage(), e);
-            throw e;
-        }
-    }
-
-    private void saveFailedReservation(ReservationDto dto, String status) {
-        ReservationEntity failedReservation = ReservationEntity.builder()
-                .userId(dto.getUserId())
-                .eventId(dto.getEventId())
-                .quantity(dto.getQuantity())
-                .status(status)
-                .reservationDate(LocalDateTime.now())
-                .build();
-        reservationRepository.save(failedReservation);
-        logger.warn("예약 저장  실패: {}", failedReservation.getId());
+        reservation = reservationRepository.save(reservation);
+        logger.info("예약 데이터베이스 저장 성공. ID: {}, 이벤트: {}, 사용자: {}",
+                reservation.getId(), dto.getEventId(), dto.getUserId());
     }
 
 
@@ -134,16 +108,16 @@ public class ReservationServiceImpl implements ReservationService {
                     throw new RuntimeException("해당 예약에 대한 권한이 없습니다.");
                 }
 
-                if ("confirmed".equals(reservation.getStatus())) {
+                if (STATUS_CONFIRMED.equals(reservation.getStatus())) {
                     return "이미 확정된 예약입니다.";
                 }
 
-                reservation.setStatus("confirmed");
+                reservation.setStatus(STATUS_CONFIRMED);
                 reservationRepository.save(reservation);
 
                 return "예약이 확정되었습니다.";
             } catch (Exception e) {
-                logger.error("Error confirming reservation: {}", e.getMessage());
+                logger.error("예약 확정 중 오류 발생: {}", e.getMessage());
                 throw new RuntimeException("예약 확정 중 오류가 발생했습니다.");
             }
         });
