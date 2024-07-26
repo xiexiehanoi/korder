@@ -83,6 +83,9 @@ public class EventServiceImpl implements EventService {
             throw new RuntimeException("티켓 재고가 부족합니다.");
         }
 
+        inventory.setRemainingQuantity(newRemainingQuantity);
+        eventInventoryRepository.save(inventory);
+
         EventEntity event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new RuntimeException("이벤트를 찾을 수 없습니다."));
 
@@ -90,6 +93,9 @@ public class EventServiceImpl implements EventService {
         if (newRemainingQuantity == 0) {
             event.setStatus("sold out");
             logger.info("Event ID: {} is now sold out", eventId);
+        } else if (event.getStatus().equals("sold out") && newRemainingQuantity > 0) {
+            event.setStatus("available");
+            logger.info("Event ID: {} is now available again", eventId);
         }
 
         event = eventRepository.save(event);
